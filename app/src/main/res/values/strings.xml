@@ -1,0 +1,18 @@
+<resources>
+    <string name="app_name">ETSIT Noticias</string>
+
+    <string name="more_info">Más información</string>
+
+    <!-- Relacionado con los menús -->
+    <string name="action_share">Compartir</string>
+    <string name="action_filter">Filtro</string>
+    <string name="action_settings">Ajustes</string>
+    <string name="title_activity_settings">Ajustes</string>
+
+    <!-- Relacionado con el content provider -->
+    <string name="content_authority">com.fjoglar.etsitnoticias</string>
+
+    <!-- Relacionado con SharedPreferences -->
+    <string name="pref_last_updated_key" translatable="false">last_updated</string>
+
+</resources>
