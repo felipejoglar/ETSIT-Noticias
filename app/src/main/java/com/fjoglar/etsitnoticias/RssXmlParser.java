@@ -60,7 +60,7 @@ public class RssXmlParser {
             XmlPullParserFactory factory = XmlPullParserFactory.newInstance();
             XmlPullParser xpp = factory.newPullParser();
 
-            // Establecemos la entrada del Parser.
+            // Establecemos la entrada del Parser."ISO-8859-1"
             xpp.setInput(inputStream, null);
 
             // Cogemos el primer evento del Parser y empezamos a iterar sobre el documento XML.
@@ -182,7 +182,7 @@ public class RssXmlParser {
     /**
      * Formatea el texto para que sólo tenga carácteres impimibles. Además también
      * corrige el problema de que en algunas descripciones hay muchos saltos de línea
-     * seguidos. De esta manera el texto queda de una manera visualmente más agradable
+     * seguidos. De esta manera el texto queda visualmente más agradable
      * y optimizado para su lectura.
      *
      * @param text Texto a formatear.
@@ -190,7 +190,12 @@ public class RssXmlParser {
      */
     private String formatText(String text) {
         // todo: arreglar lo de los saltos de línea.
-        text = text.replaceAll("[^\\s\\p{Print}]", "");
+        text = text.replaceAll("[^\\s\\p{Print}]", "")
+                .replace(" ", "AuxText")
+                .replace("\r\nAuxText", "\r\n")
+                .replaceAll("[\\r\\n]+", "\n\n")
+                .replace("AuxText", " ");
+
         return text;
     }
 
