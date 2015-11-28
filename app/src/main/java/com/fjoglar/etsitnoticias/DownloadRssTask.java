@@ -51,7 +51,9 @@ public class DownloadRssTask extends AsyncTask<Void, Void, Void> {
 
     @Override
     protected void onPostExecute(Void aVoid) {
-        mSwipeRefreshLayout.setRefreshing(false);
+        if (mSwipeRefreshLayout != null){
+            mSwipeRefreshLayout.setRefreshing(false);
+        }
         super.onPostExecute(aVoid);
     }
 

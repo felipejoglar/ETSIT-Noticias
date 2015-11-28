@@ -16,7 +16,6 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.Locale;
 import java.util.TimeZone;
 
 public class RssItemAdapter extends CursorAdapter {
@@ -77,7 +76,7 @@ public class RssItemAdapter extends CursorAdapter {
         viewHolder.titleView.setText(cursor.getString(MainFragment.COL_RSS_TITLE));
         viewHolder.dateView.setText(date);
         viewHolder.descriptionView.setText(cursor.getString(MainFragment.COL_RSS_DESC));
-        viewHolder.categoryView.setText(Utility.CategoryToString(cursor.getString(MainFragment.COL_RSS_CATEGORY)));
+        viewHolder.categoryView.setText(Utility.categoryToString(cursor.getString(MainFragment.COL_RSS_CATEGORY)));
 
     }
 
@@ -109,10 +108,13 @@ public class RssItemAdapter extends CursorAdapter {
                 if (diffInDays > 0 && diffInDays < 7) {
                     return diffInDays + "d";
                 } else {
-                    SimpleDateFormat formatter = new SimpleDateFormat("d MMM", Locale.US);
+                    SimpleDateFormat formatter = new SimpleDateFormat("d");
                     Calendar calendar = Calendar.getInstance();
                     calendar.setTimeInMillis(d2.getTime());
-                    return String.valueOf(formatter.format(calendar.getTime()));
+                    String day = formatter.format(calendar.getTime());
+                    formatter = new SimpleDateFormat("MMM");
+                    String month = Utility.capitalizeWord(formatter.format(calendar.getTime()));
+                    return day + " " + month;
                 }
             } else {
                 int diffHours = (int) (diff / (60 * 60 * 1000));

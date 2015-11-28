@@ -21,7 +21,6 @@ import com.fjoglar.etsitnoticias.data.RssContract;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
-import java.util.Locale;
 
 
 public class DetailFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor> {
@@ -137,15 +136,22 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
 
         // Formateamos la fecha.
         Long dateInMillis = data.getLong(COL_RSS_PUB_DATE);
-        SimpleDateFormat formatter = new SimpleDateFormat("EEEE, d 'de' MMMM 'de' yyyy '.'", new Locale("es", "ES"));
+        SimpleDateFormat formatter = new SimpleDateFormat("EEEE");
         Calendar calendar = Calendar.getInstance();
         calendar.setTimeInMillis(dateInMillis);
-        String date = String.valueOf(formatter.format(calendar.getTime()));
+        String dayName = Utility.capitalizeWord(formatter.format(calendar.getTime()));
+        formatter = new SimpleDateFormat("d");
+        String dayNumber = String.valueOf(formatter.format(calendar.getTime()));
+        formatter = new SimpleDateFormat("MMMM");
+        String month = Utility.capitalizeWord(formatter.format(calendar.getTime()));
+        formatter = new SimpleDateFormat("yyyy");
+        String year = String.valueOf(formatter.format(calendar.getTime()));
+        String date = dayName + ", " + dayNumber + " de " + month + " de " + year + ".";
 
         detailTitle.setText(data.getString(COL_RSS_TITLE));
         detailDate.setText(date);
         detailDescription.setText(data.getString(COL_RSS_DESC));
-        detailCategory.setText(Utility.CategoryToString(data.getString(COL_RSS_CATEGORY)));
+        detailCategory.setText(Utility.categoryToString(data.getString(COL_RSS_CATEGORY)));
 
         detailLink.setOnClickListener(new View.OnClickListener() {
             @Override

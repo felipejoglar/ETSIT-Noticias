@@ -2,7 +2,7 @@ package com.fjoglar.etsitnoticias;
 
 public class Utility {
 
-    public static String CategoryToString(String category) {
+    public static String categoryToString(String category) {
         String result;
 
         if (category.equals("1") || category.equals("2")) {
@@ -24,6 +24,10 @@ public class Utility {
         }
 
         return result;
+    }
+
+    public static String capitalizeWord(String word){
+        return Character.toUpperCase(word.charAt(0)) + word.substring(1);
     }
 
 }

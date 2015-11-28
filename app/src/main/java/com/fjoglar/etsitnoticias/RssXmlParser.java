@@ -18,6 +18,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
+import java.util.Vector;
 
 /**
  * Esta clase recoge un archivo de noticias XML de etsit.es.
@@ -38,21 +39,11 @@ public class RssXmlParser {
     private final String PUB_DATE_TAG = "pubDate";
     private String mTitle, mDescription, mLink, mCategory, mPubDate;
     private boolean mIsParsingTitle, mIsParsingDescription, mIsParsingLink, mIsParsingCategory, mIsParsingPubDate;
-    private long mLastTimeUpdated;
+    private Vector<ContentValues> cVVector = new Vector<ContentValues>();
 
     public void parse(Context context, InputStream inputStream) throws XmlPullParserException, IOException {
 
         mContext = context;
-
-        // Antes de insertar los nuevos datos borramos los anteriores, de
-        // manera que siempre tengamos la última información, tal y como
-        // está en el tablón de www.etsit.es.
-        // También nos ayuda a que en modo tablet, nos muestre la última
-        // noticia cuando abrimos la aplicación.
-        mContext.getContentResolver().delete(RssContract.RssEntry.CONTENT_URI, null, null);
-
-        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(mContext);
-        mLastTimeUpdated = prefs.getLong(mContext.getString(R.string.pref_last_updated_key), 0L);
 
         try {
 
@@ -78,9 +69,24 @@ public class RssXmlParser {
                 eventType = xpp.next();
             }
 
-            // Actualizamos la fecha de la última actualización.
-            prefs.edit().putLong(mContext.getString(R.string.pref_last_updated_key), System.currentTimeMillis()).apply();
+            // Si ha salido correctamente, tenemos el vector de ContentValues con los nuevos datos,
+            // así que borramos la tabla y la actualizamos de nuevo.
+            if ( cVVector.size() > 0 ) {
+                // Antes de insertar los nuevos datos borramos los anteriores, de
+                // manera que siempre tengamos la última información, tal y como
+                // está en el tablón de www.etsit.es.
+                // También nos ayuda a que en modo tablet, nos muestre la última
+                // noticia cuando abrimos la aplicación.
+                mContext.getContentResolver().delete(RssContract.RssEntry.CONTENT_URI, null, null);
 
+                ContentValues[] cvArray = new ContentValues[cVVector.size()];
+                cVVector.toArray(cvArray);
+                mContext.getContentResolver().bulkInsert(RssContract.RssEntry.CONTENT_URI, cvArray);
+
+                // Actualizamos la fecha de la última actualización.
+                SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(mContext);
+                prefs.edit().putLong(mContext.getString(R.string.pref_last_updated_key), System.currentTimeMillis()).apply();
+            }
 
         } catch (XmlPullParserException e) {
             Log.e(LOG_TAG, e.getMessage(), e);
@@ -154,10 +160,7 @@ public class RssXmlParser {
         rssValues.put(RssContract.RssEntry.COLUMN_CATEGORY, mCategory);
         rssValues.put(RssContract.RssEntry.COLUMN_PUB_DATE, ParseDate(mPubDate).getTime());
 
-        mContext.getContentResolver().insert(
-                RssContract.RssEntry.CONTENT_URI,
-                rssValues
-        );
+        cVVector.add(rssValues);
 
     }
 
