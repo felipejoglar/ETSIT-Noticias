@@ -1,6 +1,7 @@
 package com.fjoglar.etsitnoticias;
 
 import android.content.Context;
+import android.content.Intent;
 import android.database.Cursor;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
@@ -91,6 +92,7 @@ public class MainFragment extends Fragment implements LoaderManager.LoaderCallba
 
         int id = item.getItemId();
         if (id == R.id.action_settings) {
+            startActivity(new Intent(getActivity(), SettingsActivity.class));
             return true;
         }
 

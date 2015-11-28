@@ -1,0 +1,12 @@
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <ListPreference
+        android:defaultValue="@string/pref_sync_frequency_six"
+        android:entries="@array/pref_sync_frequency_options"
+        android:entryValues="@array/pref_sync_frequency_values"
+        android:key="@string/pref_sync_frequency_key"
+        android:title="@string/pref_sync_frequency_label" />
+
+</PreferenceScreen>

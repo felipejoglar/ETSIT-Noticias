@@ -1,5 +1,6 @@
 <resources>
     <string name="app_name">ETSIT Noticias</string>
+    <string name="title_activity_settings">Ajustes</string>
 
     <string name="more_info">Más información</string>
 
@@ -7,12 +8,29 @@
     <string name="action_share">Compartir</string>
     <string name="action_filter">Filtro</string>
     <string name="action_settings">Ajustes</string>
-    <string name="title_activity_settings">Ajustes</string>
 
     <!-- Relacionado con el content provider -->
     <string name="content_authority">com.fjoglar.etsitnoticias</string>
 
-    <!-- Relacionado con SharedPreferences -->
+    <!-- Relacionado con SharedPreferences y ajustes -->
     <string name="pref_last_updated_key" translatable="false">last_updated</string>
+
+    <string name="pref_sync_frequency_key" translatable="false">sync_frequency</string>
+
+    <string name="pref_sync_frequency_label">Frecuencia de sincronización</string>
+
+    <string name="pref_sync_frequency_label_one">Cada hora</string>
+    <string name="pref_sync_frequency_label_three">Cada 3 horas</string>
+    <string name="pref_sync_frequency_label_six">Cada 6 horas</string>
+    <string name="pref_sync_frequency_label_twelve">Cada 12 horas</string>
+    <string name="pref_sync_frequency_label_twenty_four">Cada día</string>
+
+    <string name="pref_sync_frequency_one">1</string>
+    <string name="pref_sync_frequency_three">3</string>
+    <string name="pref_sync_frequency_six">6</string>
+    <string name="pref_sync_frequency_twelve">12</string>
+    <string name="pref_sync_frequency_twenty_four">24</string>
+    <string name="title_activity_settings1">Settings</string>
+    <string name="title_activity_settings2122">Settings</string>
 
 </resources>

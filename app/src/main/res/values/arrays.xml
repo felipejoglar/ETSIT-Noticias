@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string-array name="pref_sync_frequency_options">
+        <item>@string/pref_sync_frequency_label_one</item>
+        <item>@string/pref_sync_frequency_label_three</item>
+        <item>@string/pref_sync_frequency_label_six</item>
+        <item>@string/pref_sync_frequency_label_twelve</item>
+        <item>@string/pref_sync_frequency_label_twenty_four</item>
+    </string-array>
+
+    <integer-array name="pref_sync_frequency_values">
+        <item>@string/pref_sync_frequency_one</item>
+        <item>@string/pref_sync_frequency_three</item>
+        <item>@string/pref_sync_frequency_six</item>
+        <item>@string/pref_sync_frequency_twelve</item>
+        <item>@string/pref_sync_frequency_twenty_four</item>
+    </integer-array>
+</resources>
