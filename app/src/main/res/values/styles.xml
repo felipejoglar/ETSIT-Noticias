@@ -6,6 +6,10 @@
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
+
+        <item name="android:dialogTheme">@style/DialogStyle</item>
+        <item name="android:alertDialogTheme">@style/DialogStyle</item>
+
     </style>
 
     <style name="MoreInfoButton" parent="Theme.AppCompat.Light">
@@ -14,6 +18,18 @@
 
     <style name="RssListStyle">
         <!-- Estilo de la lista. Para pantallas pequeñas no requiere modificación. -->
+    </style>
+
+    <style name="DialogStyle">
+        <!-- Estilo de ListPreference. -->
+    </style>
+
+    <style name="SplashTheme" parent="Theme.AppCompat.NoActionBar">
+        <item name="android:windowBackground">@drawable/background_splash</item>
+    </style>
+
+    <style name="AitcylLink">
+        <item name="android:windowBackground">@drawable/logo_aitcyl</item>
     </style>
 
 </resources>

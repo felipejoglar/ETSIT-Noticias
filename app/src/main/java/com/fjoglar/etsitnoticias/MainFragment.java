@@ -1,16 +1,23 @@
 package com.fjoglar.etsitnoticias;
 
+import android.app.AlarmManager;
+import android.app.PendingIntent;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
+import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
+import android.support.v4.content.LocalBroadcastManager;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -24,6 +31,9 @@ import android.widget.ListView;
 
 import com.fjoglar.etsitnoticias.adapter.RssItemAdapter;
 import com.fjoglar.etsitnoticias.data.RssContract;
+import com.fjoglar.etsitnoticias.service.DownloadRssService;
+
+import java.util.Calendar;
 
 
 public class MainFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor>, SwipeRefreshLayout.OnRefreshListener {
@@ -39,6 +49,7 @@ public class MainFragment extends Fragment implements LoaderManager.LoaderCallba
 
     private RssItemAdapter mRssItemAdapter;
     private SwipeRefreshLayout mSwipeRefreshLayout;
+    private BroadcastReceiver mBroadcastReceiver;
 
     /**
      * Una interfaz de Callback que todas las actividades que contienen este fragment deben
@@ -80,6 +91,20 @@ public class MainFragment extends Fragment implements LoaderManager.LoaderCallba
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
+
+        // Recibimos el resultado del servicio y si la sincronización se hizo
+        // de manera manual o al iniciar la aplicación detenemos la animación
+        // del SwipeToRefresh.
+        mBroadcastReceiver = new BroadcastReceiver() {
+            @Override
+            public void onReceive(Context context, Intent intent) {
+                String message = intent.getStringExtra(DownloadRssService.SERVICE_MESSAGE);
+                if (message.equals(getActivity().getString(R.string.service_result)) && mSwipeRefreshLayout != null) {
+                    mSwipeRefreshLayout.setRefreshing(false);
+                }
+            }
+        };
+
     }
 
     @Override
@@ -161,6 +186,20 @@ public class MainFragment extends Fragment implements LoaderManager.LoaderCallba
     }
 
     @Override
+    public void onStart() {
+        super.onStart();
+        LocalBroadcastManager.getInstance(getActivity()).registerReceiver((mBroadcastReceiver),
+                new IntentFilter(DownloadRssService.SERVICE_RESULT)
+        );
+    }
+
+    @Override
+    public void onStop() {
+        LocalBroadcastManager.getInstance(getActivity()).unregisterReceiver(mBroadcastReceiver);
+        super.onStop();
+    }
+
+    @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         getLoaderManager().initLoader(RSS_LOADER, null, this);
         super.onActivityCreated(savedInstanceState);
@@ -173,10 +212,31 @@ public class MainFragment extends Fragment implements LoaderManager.LoaderCallba
 
         NetworkInfo activeInfo = connMgr.getActiveNetworkInfo();
         if (activeInfo != null && activeInfo.isConnected()) {
-            new DownloadRssTask(getActivity(), mSwipeRefreshLayout).execute();
+            Intent intent = new Intent(getActivity(), DownloadRssService.class);
+            getActivity().startService(intent);
         } else {
             mSwipeRefreshLayout.setRefreshing(false);
         }
+
+        AlarmManager alarmMgr = (AlarmManager) getActivity().getSystemService(Context.ALARM_SERVICE);
+        Intent intent = new Intent(getActivity(), DownloadRssService.AlarmReceiver.class);
+        PendingIntent alarmIntent = PendingIntent.getBroadcast(getActivity(), 0, intent, 0);
+
+        // Ponemos una alarma aproximadamente a las 00:00 horas.
+        // Se trata de poder temporizar la sincronización de la aplicación para así
+        // poder enviar notificaciones al usuario.
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTimeInMillis(System.currentTimeMillis());
+        calendar.set(Calendar.HOUR_OF_DAY, 0);
+
+        // Obtenemos el periodo de sincronización.
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getActivity());
+        int syncInterval = Integer.parseInt(prefs.getString(getActivity().getString(R.string.pref_sync_frequency_key), "6"));
+        alarmMgr.setInexactRepeating(AlarmManager.RTC_WAKEUP,
+                calendar.getTimeInMillis(),
+                AlarmManager.INTERVAL_HOUR * syncInterval,
+                alarmIntent);
+
     }
 
     @Override

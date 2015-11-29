@@ -2,11 +2,32 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
+    <CheckBoxPreference
+        android:defaultValue="@string/pref_enable_notifications_default"
+        android:key="@string/pref_enable_notifications_key"
+        android:title="@string/pref_enable_notifications_label" />
+
     <ListPreference
         android:defaultValue="@string/pref_sync_frequency_six"
         android:entries="@array/pref_sync_frequency_options"
         android:entryValues="@array/pref_sync_frequency_values"
         android:key="@string/pref_sync_frequency_key"
         android:title="@string/pref_sync_frequency_label" />
+
+    <PreferenceCategory android:title="Webs de interés">
+
+        <Preference android:layout="@layout/preference_etsit_link">
+            <intent
+                android:action="android.intent.action.VIEW"
+                android:data="http://www.tel.uva.es" />
+        </Preference>
+
+        <Preference android:layout="@layout/preference_aitcyl_link">
+            <intent
+                android:action="android.intent.action.VIEW"
+                android:data="http://www.aitcyl.es" />
+        </Preference>
+
+    </PreferenceCategory>
 
 </PreferenceScreen>

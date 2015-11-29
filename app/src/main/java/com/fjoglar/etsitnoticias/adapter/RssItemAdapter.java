@@ -16,7 +16,6 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.TimeZone;
 
 public class RssItemAdapter extends CursorAdapter {
 
@@ -67,7 +66,7 @@ public class RssItemAdapter extends CursorAdapter {
 
         // Formateamos la fecha.
         Long dateInMillis = cursor.getLong(MainFragment.COL_RSS_PUB_DATE);
-        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        SimpleDateFormat formatter = new SimpleDateFormat("EEE, d MMM yyyy HH:mm:ss z");
         Calendar calendar = Calendar.getInstance();
         calendar.setTimeInMillis(dateInMillis);
         String date = String.valueOf(formatter.format(calendar.getTime()));
@@ -90,8 +89,7 @@ public class RssItemAdapter extends CursorAdapter {
      */
     private String formatTime(String pDate) {
         int diffInDays = 0;
-        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-        format.setTimeZone(TimeZone.getTimeZone("GMT"));
+        SimpleDateFormat format = new SimpleDateFormat("EEE, d MMM yyyy HH:mm:ss z");
         Calendar c = Calendar.getInstance();
         String formattedDate = format.format(c.getTime());
 

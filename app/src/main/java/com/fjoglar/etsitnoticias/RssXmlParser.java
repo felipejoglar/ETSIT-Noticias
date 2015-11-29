@@ -39,6 +39,7 @@ public class RssXmlParser {
     private final String PUB_DATE_TAG = "pubDate";
     private String mTitle, mDescription, mLink, mCategory, mPubDate;
     private boolean mIsParsingTitle, mIsParsingDescription, mIsParsingLink, mIsParsingCategory, mIsParsingPubDate;
+    private long mLastDownloadedNew = 0;
     private Vector<ContentValues> cVVector = new Vector<ContentValues>();
 
     public void parse(Context context, InputStream inputStream) throws XmlPullParserException, IOException {
@@ -71,7 +72,7 @@ public class RssXmlParser {
 
             // Si ha salido correctamente, tenemos el vector de ContentValues con los nuevos datos,
             // así que borramos la tabla y la actualizamos de nuevo.
-            if ( cVVector.size() > 0 ) {
+            if (cVVector.size() > 0) {
                 // Antes de insertar los nuevos datos borramos los anteriores, de
                 // manera que siempre tengamos la última información, tal y como
                 // está en el tablón de www.etsit.es.
@@ -83,8 +84,13 @@ public class RssXmlParser {
                 cVVector.toArray(cvArray);
                 mContext.getContentResolver().bulkInsert(RssContract.RssEntry.CONTENT_URI, cvArray);
 
-                // Actualizamos la fecha de la última actualización.
+                // Determinamos si hay que enviar notificación al usuario.
                 SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(mContext);
+                if (mLastDownloadedNew > prefs.getLong(mContext.getString(R.string.pref_last_updated_key), 0))
+                    prefs.edit().putBoolean(mContext.getString(R.string.pref_send_notification_key), true).apply();
+
+
+                // Actualizamos la fecha de la última actualización.
                 prefs.edit().putLong(mContext.getString(R.string.pref_last_updated_key), System.currentTimeMillis()).apply();
             }
 
@@ -148,9 +154,16 @@ public class RssXmlParser {
      * Guarda la noticia en la base de datos.
      */
     private void insertRss() {
+        long dateTime = ParseDate(mPubDate).getTime();
+
         // No podemos tener una descripción nula.
         if (mDescription == null)
             mDescription = "";
+
+        // Guardamos la fecha de la última noticia.
+        // Esto nos ayuda a la hora de mandar las notificaciones al usuario.
+        if (mLastDownloadedNew < dateTime)
+            mLastDownloadedNew = dateTime;
 
         ContentValues rssValues = new ContentValues();
 
@@ -158,7 +171,7 @@ public class RssXmlParser {
         rssValues.put(RssContract.RssEntry.COLUMN_DESCRIPTION, formatText(mDescription));
         rssValues.put(RssContract.RssEntry.COLUMN_LINK, mLink);
         rssValues.put(RssContract.RssEntry.COLUMN_CATEGORY, mCategory);
-        rssValues.put(RssContract.RssEntry.COLUMN_PUB_DATE, ParseDate(mPubDate).getTime());
+        rssValues.put(RssContract.RssEntry.COLUMN_PUB_DATE, dateTime);
 
         cVVector.add(rssValues);
 

@@ -26,7 +26,7 @@ public class Utility {
         return result;
     }
 
-    public static String capitalizeWord(String word){
+    public static String capitalizeWord(String word) {
         return Character.toUpperCase(word.charAt(0)) + word.substring(1);
     }
 
