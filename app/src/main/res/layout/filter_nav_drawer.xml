@@ -1,0 +1,239 @@
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/filter_drawer"
+    android:layout_width="@dimen/drawer_width"
+    android:layout_height="match_parent"
+    android:layout_gravity="end"
+    android:background="@color/navdrawer_background"
+    android:clickable="true"
+    android:fitsSystemWindows="true">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="@dimen/padding_normal"
+            android:layout_marginStart="@dimen/padding_normal"
+            android:fontFamily="sans-serif-medium"
+            android:gravity="center_vertical|start"
+            android:minHeight="?actionBarSize"
+            android:text="@string/title_filter"
+            android:textAppearance="@style/TextAppearance.Title" />
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_marginBottom="8dp"
+            android:background="@android:color/darker_gray" />
+
+        <LinearLayout
+            android:id="@+id/filter_0"
+            android:layout_width="match_parent"
+            android:layout_height="48dp"
+            android:paddingLeft="16dp"
+            android:paddingRight="16dp">
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical|right"
+                android:layout_weight="1"
+                android:text="@string/filter_0"
+                android:textColor="@android:color/black" />
+
+            <CheckBox
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical|right" />
+
+        </LinearLayout>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_marginBottom="8dp"
+            android:layout_marginTop="8dp"
+            android:background="@android:color/darker_gray" />
+
+        <LinearLayout
+            android:id="@+id/filter_1"
+            android:layout_width="match_parent"
+            android:layout_height="48dp"
+            android:paddingLeft="16dp"
+            android:paddingRight="16dp">
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical|right"
+                android:layout_weight="1"
+                android:text="@string/filter_1"
+                android:textColor="@android:color/black" />
+
+            <CheckBox
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical|right" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/filter_2"
+            android:layout_width="match_parent"
+            android:layout_height="48dp"
+            android:paddingLeft="16dp"
+            android:paddingRight="16dp">
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical|right"
+                android:layout_weight="1"
+                android:text="@string/filter_2"
+                android:textColor="@android:color/black" />
+
+            <CheckBox
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical|right" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/filter_3"
+            android:layout_width="match_parent"
+            android:layout_height="48dp"
+            android:paddingLeft="16dp"
+            android:paddingRight="16dp">
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical|right"
+                android:layout_weight="1"
+                android:text="@string/filter_3"
+                android:textColor="@android:color/black" />
+
+            <CheckBox
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical|right" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/filter_4"
+            android:layout_width="match_parent"
+            android:layout_height="48dp"
+            android:paddingLeft="16dp"
+            android:paddingRight="16dp">
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical|right"
+                android:layout_weight="1"
+                android:text="@string/filter_4"
+                android:textColor="@android:color/black" />
+
+            <CheckBox
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical|right" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/filter_5"
+            android:layout_width="match_parent"
+            android:layout_height="48dp"
+            android:paddingLeft="16dp"
+            android:paddingRight="16dp">
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical|right"
+                android:layout_weight="1"
+                android:text="@string/filter_5"
+                android:textColor="@android:color/black" />
+
+            <CheckBox
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical|right" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/filter_6"
+            android:layout_width="match_parent"
+            android:layout_height="48dp"
+            android:paddingLeft="16dp"
+            android:paddingRight="16dp">
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical|right"
+                android:layout_weight="1"
+                android:text="@string/filter_6"
+                android:textColor="@android:color/black" />
+
+            <CheckBox
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical|right" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/filter_7"
+            android:layout_width="match_parent"
+            android:layout_height="48dp"
+            android:paddingLeft="16dp"
+            android:paddingRight="16dp">
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical|right"
+                android:layout_weight="1"
+                android:text="@string/filter_7"
+                android:textColor="@android:color/black" />
+
+            <CheckBox
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical|right" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/filter_8"
+            android:layout_width="match_parent"
+            android:layout_height="48dp"
+            android:paddingLeft="16dp"
+            android:paddingRight="16dp">
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical|right"
+                android:layout_weight="1"
+                android:text="@string/filter_8"
+                android:textColor="@android:color/black" />
+
+            <CheckBox
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical|right" />
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+</ScrollView>

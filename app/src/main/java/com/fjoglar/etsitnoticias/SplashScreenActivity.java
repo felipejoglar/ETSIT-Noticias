@@ -10,10 +10,10 @@ public class SplashScreenActivity extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        // Mostramos el logo de AITCYL durante un segundo antes de iniciar
+        // Mostramos el logo de AITCYL durante un segundo y medio antes de iniciar
         // la aplicación.
         try {
-            Thread.sleep(1000);
+            Thread.sleep(1500);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }

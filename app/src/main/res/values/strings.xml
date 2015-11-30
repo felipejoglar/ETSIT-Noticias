@@ -47,5 +47,15 @@
     <string name="aitcyl_banner">AITCYL banner</string>
     <string name="etsit_banner">ETSIT banner</string>
 
-
+    <!-- Relacionado con Filtro y Categorias -->
+    <string name="title_filter">Filtro</string>
+    <string name="filter_0">Todos</string>
+    <string name="filter_1">Avisos destacados</string>
+    <string name="filter_2">Avisos generales</string>
+    <string name="filter_3">Conferencias/Charlas/Talleres</string>
+    <string name="filter_4">Ofertas de becas/Prácticas/Empleo</string>
+    <string name="filter_5">Avisos y Ofertas de TFG/TFM</string>
+    <string name="filter_6">Junta de Escuela</string>
+    <string name="filter_7">Investigación</string>
+    <string name="filter_8">Otros</string>
 </resources>

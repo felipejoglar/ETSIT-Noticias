@@ -28,8 +28,6 @@
         <item name="android:windowBackground">@drawable/background_splash</item>
     </style>
 
-    <style name="AitcylLink">
-        <item name="android:windowBackground">@drawable/logo_aitcyl</item>
-    </style>
+    <style name="TextAppearance.Title" parent="TextAppearance.AppCompat.Title" />
 
 </resources>

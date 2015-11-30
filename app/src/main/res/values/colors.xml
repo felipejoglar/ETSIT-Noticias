@@ -8,5 +8,6 @@
     <color name="background">#FFEEEEEE</color>
 
     <color name="selector_light_blue_grey">#FF587C9E</color>
+    <color name="navdrawer_background">#FFFFFFFF</color>
 
 </resources>

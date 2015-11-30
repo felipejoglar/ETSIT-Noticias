@@ -120,7 +120,6 @@ public class MainFragment extends Fragment implements LoaderManager.LoaderCallba
             startActivity(new Intent(getActivity(), SettingsActivity.class));
             return true;
         }
-
         return super.onOptionsItemSelected(item);
     }
 
@@ -157,14 +156,8 @@ public class MainFragment extends Fragment implements LoaderManager.LoaderCallba
             }
         });
 
-        // If there's instance state, mine it for useful information.
-        // The end-goal here is that the user never knows that turning their device sideways
-        // does crazy lifecycle related things.  It should feel like some stuff stretched out,
-        // or magically appeared to take advantage of room, but data or place in the app was never
-        // actually *lost*.
+
         if (savedInstanceState != null && savedInstanceState.containsKey(SELECTED_KEY)) {
-            // The listview probably hasn't even been populated yet.  Actually perform the
-            // swapout in onLoadFinished.
             mPosition = savedInstanceState.getInt(SELECTED_KEY);
         }
 
@@ -206,16 +199,21 @@ public class MainFragment extends Fragment implements LoaderManager.LoaderCallba
     }
 
     private void updateData() {
-        mSwipeRefreshLayout.setRefreshing(true);
-        // Comprueba la conexión de red.
-        ConnectivityManager connMgr = (ConnectivityManager) getActivity().getSystemService(Context.CONNECTIVITY_SERVICE);
-
-        NetworkInfo activeInfo = connMgr.getActiveNetworkInfo();
-        if (activeInfo != null && activeInfo.isConnected()) {
-            Intent intent = new Intent(getActivity(), DownloadRssService.class);
-            getActivity().startService(intent);
-        } else {
-            mSwipeRefreshLayout.setRefreshing(false);
+        // Si la última actualización ha sido hace menos de 10 minutos no actualizamos directamente
+        // así evitamos conexiones innecesarias cuando se rota la pantalla y conseguimos
+        // un ahorro de batería, importente en dispositivos móviles.
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getActivity());
+        if (System.currentTimeMillis() - prefs.getLong(getActivity().getString(R.string.pref_last_updated_key), 0) > 10 * 60 * 1000) {
+            mSwipeRefreshLayout.setRefreshing(true);
+            // Comprueba la conexión de red.
+            ConnectivityManager connMgr = (ConnectivityManager) getActivity().getSystemService(Context.CONNECTIVITY_SERVICE);
+            NetworkInfo activeInfo = connMgr.getActiveNetworkInfo();
+            if (activeInfo != null && activeInfo.isConnected()) {
+                Intent intent = new Intent(getActivity(), DownloadRssService.class);
+                getActivity().startService(intent);
+            } else {
+                mSwipeRefreshLayout.setRefreshing(false);
+            }
         }
 
         AlarmManager alarmMgr = (AlarmManager) getActivity().getSystemService(Context.ALARM_SERVICE);
@@ -230,7 +228,6 @@ public class MainFragment extends Fragment implements LoaderManager.LoaderCallba
         calendar.set(Calendar.HOUR_OF_DAY, 0);
 
         // Obtenemos el periodo de sincronización.
-        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getActivity());
         int syncInterval = Integer.parseInt(prefs.getString(getActivity().getString(R.string.pref_sync_frequency_key), "6"));
         alarmMgr.setInexactRepeating(AlarmManager.RTC_WAKEUP,
                 calendar.getTimeInMillis(),
@@ -241,9 +238,7 @@ public class MainFragment extends Fragment implements LoaderManager.LoaderCallba
 
     @Override
     public void onSaveInstanceState(Bundle outState) {
-        // When tablets rotate, the currently selected list item needs to be saved.
-        // When no item is selected, mPosition will be set to Listview.INVALID_POSITION,
-        // so check for that before storing.
+        // Guardamos el item seleccionado cuando la tableta rota.
         if (mPosition != ListView.INVALID_POSITION) {
             outState.putInt(SELECTED_KEY, mPosition);
         }
@@ -279,5 +274,13 @@ public class MainFragment extends Fragment implements LoaderManager.LoaderCallba
     public void onLoaderReset(Loader<Cursor> cursorLoader) {
         mRssItemAdapter.swapCursor(null);
     }
+
+//    public void backButtonWasPressed() {
+//        if (mDrawerLayout != null && mDrawerLayout.isDrawerOpen(GravityCompat.END)) {
+//            mDrawerLayout.closeDrawer(GravityCompat.END);
+//        } else {
+//            getFragmentManager().popBackStack();
+//        }
+//    }
 
 }
