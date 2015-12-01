@@ -205,7 +205,6 @@ public class RssXmlParser {
      * @return texto formateado.
      */
     private String formatText(String text) {
-        // todo: arreglar lo de los saltos de línea.
         text = text.replaceAll("[^\\s\\p{Print}]", "")
                 .replace(" ", "AuxText")
                 .replace("\r\nAuxText", "\r\n")

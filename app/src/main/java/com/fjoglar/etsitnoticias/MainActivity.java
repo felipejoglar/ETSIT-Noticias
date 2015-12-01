@@ -8,6 +8,11 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.CheckBox;
+import android.widget.LinearLayout;
+
+import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity implements MainFragment.Callback {
 
@@ -19,6 +24,47 @@ public class MainActivity extends AppCompatActivity implements MainFragment.Call
     private boolean mTwoPane;
     private DrawerLayout mDrawerLayout;
 
+    private LinearLayout mFilter1;
+    private LinearLayout mFilter2;
+    private LinearLayout mFilter3;
+    private LinearLayout mFilter4;
+    private LinearLayout mFilter5;
+    private LinearLayout mFilter6;
+    private LinearLayout mFilter7;
+    private LinearLayout mFilter8;
+
+    private CheckBox mCheckBoxFilter1;
+    private CheckBox mCheckBoxFilter2;
+    private CheckBox mCheckBoxFilter3;
+    private CheckBox mCheckBoxFilter4;
+    private CheckBox mCheckBoxFilter5;
+    private CheckBox mCheckBoxFilter6;
+    private CheckBox mCheckBoxFilter7;
+    private CheckBox mCheckBoxFilter8;
+
+    // OnClickListener para los checkbox del filtro.
+    private final View.OnClickListener mDrawerItemCheckBoxClickListener =
+            new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+
+                    if (view instanceof LinearLayout) {
+                        CheckBox checkBox = findCheckBoxByTag(view.getTag().toString());
+                        assert checkBox != null;
+                        if (checkBox.isChecked()) {
+                            checkBox.setChecked(false);
+                        } else {
+                            checkBox.setChecked(true);
+                        }
+                        updateFilter();
+                    } else if (view instanceof CheckBox) {
+                        CheckBox textView = (CheckBox) view;
+                        // do what you want with textView
+                    }
+
+                }
+            };
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -28,6 +74,11 @@ public class MainActivity extends AppCompatActivity implements MainFragment.Call
         mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
         mDrawerLayout.setDrawerShadow(R.drawable.drawer_shadow_flipped, GravityCompat.END);
 
+        // Inicializamos las vistas del filtro.
+        initializaFilterViews();
+
+        // Vinculamos los Listeners a las vistas del filtro.
+        attachListeners();
 
         if (findViewById(R.id.detail_container) != null) {
             // La vista detail_container se presentará sólo en grandes pantallas
@@ -58,7 +109,12 @@ public class MainActivity extends AppCompatActivity implements MainFragment.Call
         int id = item.getItemId();
 
         if (id == R.id.action_filter) {
-            mDrawerLayout.openDrawer(GravityCompat.END);
+            if (mDrawerLayout != null && mDrawerLayout.isDrawerOpen(GravityCompat.END)) {
+                mDrawerLayout.closeDrawer(GravityCompat.END);
+            } else {
+                assert mDrawerLayout != null;
+                mDrawerLayout.openDrawer(GravityCompat.END);
+            }
             return true;
         }
 
@@ -91,6 +147,105 @@ public class MainActivity extends AppCompatActivity implements MainFragment.Call
             Intent intent = new Intent(this, DetailActivity.class)
                     .setData(contentUri);
             startActivity(intent);
+        }
+    }
+
+    private void initializaFilterViews() {
+        mFilter1 = (LinearLayout) findViewById(R.id.filter_1);
+        mFilter2 = (LinearLayout) findViewById(R.id.filter_2);
+        mFilter3 = (LinearLayout) findViewById(R.id.filter_3);
+        mFilter4 = (LinearLayout) findViewById(R.id.filter_4);
+        mFilter5 = (LinearLayout) findViewById(R.id.filter_5);
+        mFilter6 = (LinearLayout) findViewById(R.id.filter_6);
+        mFilter7 = (LinearLayout) findViewById(R.id.filter_7);
+        mFilter8 = (LinearLayout) findViewById(R.id.filter_8);
+
+        mCheckBoxFilter1 = (CheckBox) findViewById(R.id.filter_checkbox_1);
+        mCheckBoxFilter2 = (CheckBox) findViewById(R.id.filter_checkbox_2);
+        mCheckBoxFilter3 = (CheckBox) findViewById(R.id.filter_checkbox_3);
+        mCheckBoxFilter4 = (CheckBox) findViewById(R.id.filter_checkbox_4);
+        mCheckBoxFilter5 = (CheckBox) findViewById(R.id.filter_checkbox_5);
+        mCheckBoxFilter6 = (CheckBox) findViewById(R.id.filter_checkbox_6);
+        mCheckBoxFilter7 = (CheckBox) findViewById(R.id.filter_checkbox_7);
+        mCheckBoxFilter8 = (CheckBox) findViewById(R.id.filter_checkbox_8);
+    }
+
+    private void attachListeners() {
+        mFilter1.setOnClickListener(mDrawerItemCheckBoxClickListener);
+        mFilter2.setOnClickListener(mDrawerItemCheckBoxClickListener);
+        mFilter3.setOnClickListener(mDrawerItemCheckBoxClickListener);
+        mFilter4.setOnClickListener(mDrawerItemCheckBoxClickListener);
+        mFilter5.setOnClickListener(mDrawerItemCheckBoxClickListener);
+        mFilter6.setOnClickListener(mDrawerItemCheckBoxClickListener);
+        mFilter7.setOnClickListener(mDrawerItemCheckBoxClickListener);
+        mFilter8.setOnClickListener(mDrawerItemCheckBoxClickListener);
+
+        mCheckBoxFilter1.setOnClickListener(mDrawerItemCheckBoxClickListener);
+        mCheckBoxFilter2.setOnClickListener(mDrawerItemCheckBoxClickListener);
+        mCheckBoxFilter3.setOnClickListener(mDrawerItemCheckBoxClickListener);
+        mCheckBoxFilter4.setOnClickListener(mDrawerItemCheckBoxClickListener);
+        mCheckBoxFilter5.setOnClickListener(mDrawerItemCheckBoxClickListener);
+        mCheckBoxFilter6.setOnClickListener(mDrawerItemCheckBoxClickListener);
+        mCheckBoxFilter7.setOnClickListener(mDrawerItemCheckBoxClickListener);
+        mCheckBoxFilter8.setOnClickListener(mDrawerItemCheckBoxClickListener);
+    }
+
+    private CheckBox findCheckBoxByTag(String tag) {
+        if (tag.equals(getString(R.string.filter_1))) {
+            return mCheckBoxFilter1;
+        } else if (tag.equals(getString(R.string.filter_2))) {
+            return mCheckBoxFilter2;
+        } else if (tag.equals(getString(R.string.filter_3))) {
+            return mCheckBoxFilter3;
+        } else if (tag.equals(getString(R.string.filter_4))) {
+            return mCheckBoxFilter4;
+        } else if (tag.equals(getString(R.string.filter_5))) {
+            return mCheckBoxFilter5;
+        } else if (tag.equals(getString(R.string.filter_6))) {
+            return mCheckBoxFilter6;
+        } else if (tag.equals(getString(R.string.filter_7))) {
+            return mCheckBoxFilter7;
+        } else if (tag.equals(getString(R.string.filter_8))) {
+            return mCheckBoxFilter8;
+        } else {
+            return null;
+        }
+    }
+
+    private void updateFilter() {
+        // Comprobamos las categorías que queremos mostrar.
+        ArrayList<String> categoriesToFilter = new ArrayList<>();
+        if (mCheckBoxFilter1.isChecked()) {
+            categoriesToFilter.add("12");
+        }
+        if (mCheckBoxFilter2.isChecked()) {
+            categoriesToFilter.add("1");
+            categoriesToFilter.add("2");
+        }
+        if (mCheckBoxFilter3.isChecked()) {
+            categoriesToFilter.add("11");
+        }
+        if (mCheckBoxFilter4.isChecked()) {
+            categoriesToFilter.add("3");
+            categoriesToFilter.add("4");
+        }
+        if (mCheckBoxFilter5.isChecked()) {
+            categoriesToFilter.add("5");
+        }
+        if (mCheckBoxFilter6.isChecked()) {
+            categoriesToFilter.add("15");
+        }
+        if (mCheckBoxFilter7.isChecked()) {
+            categoriesToFilter.add("16");
+        }
+        if (mCheckBoxFilter8.isChecked()) {
+            categoriesToFilter.add("6");
+            categoriesToFilter.add("7");
+            categoriesToFilter.add("8");
+            categoriesToFilter.add("9");
+            categoriesToFilter.add("10");
+            categoriesToFilter.add("13");
+            categoriesToFilter.add("14");
         }
     }
 

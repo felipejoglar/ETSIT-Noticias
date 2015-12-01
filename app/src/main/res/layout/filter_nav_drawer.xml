@@ -30,40 +30,13 @@
             android:background="@android:color/darker_gray" />
 
         <LinearLayout
-            android:id="@+id/filter_0"
-            android:layout_width="match_parent"
-            android:layout_height="48dp"
-            android:paddingLeft="16dp"
-            android:paddingRight="16dp">
-
-            <TextView
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center_vertical|right"
-                android:layout_weight="1"
-                android:text="@string/filter_0"
-                android:textColor="@android:color/black" />
-
-            <CheckBox
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center_vertical|right" />
-
-        </LinearLayout>
-
-        <View
-            android:layout_width="match_parent"
-            android:layout_height="1dp"
-            android:layout_marginBottom="8dp"
-            android:layout_marginTop="8dp"
-            android:background="@android:color/darker_gray" />
-
-        <LinearLayout
             android:id="@+id/filter_1"
             android:layout_width="match_parent"
             android:layout_height="48dp"
+            android:background="?attr/selectableItemBackground"
             android:paddingLeft="16dp"
-            android:paddingRight="16dp">
+            android:paddingRight="16dp"
+            android:tag="@string/filter_1">
 
             <TextView
                 android:layout_width="0dp"
@@ -74,9 +47,11 @@
                 android:textColor="@android:color/black" />
 
             <CheckBox
+                android:id="@+id/filter_checkbox_1"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_gravity="center_vertical|right" />
+                android:layout_gravity="center_vertical|right"
+                android:tag="@string/filter_1" />
 
         </LinearLayout>
 
@@ -84,8 +59,10 @@
             android:id="@+id/filter_2"
             android:layout_width="match_parent"
             android:layout_height="48dp"
+            android:background="?attr/selectableItemBackground"
             android:paddingLeft="16dp"
-            android:paddingRight="16dp">
+            android:paddingRight="16dp"
+            android:tag="@string/filter_2">
 
             <TextView
                 android:layout_width="0dp"
@@ -96,9 +73,11 @@
                 android:textColor="@android:color/black" />
 
             <CheckBox
+                android:id="@+id/filter_checkbox_2"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_gravity="center_vertical|right" />
+                android:layout_gravity="center_vertical|right"
+                android:tag="@string/filter_2" />
 
         </LinearLayout>
 
@@ -106,8 +85,10 @@
             android:id="@+id/filter_3"
             android:layout_width="match_parent"
             android:layout_height="48dp"
+            android:background="?attr/selectableItemBackground"
             android:paddingLeft="16dp"
-            android:paddingRight="16dp">
+            android:paddingRight="16dp"
+            android:tag="@string/filter_3">
 
             <TextView
                 android:layout_width="0dp"
@@ -118,9 +99,11 @@
                 android:textColor="@android:color/black" />
 
             <CheckBox
+                android:id="@+id/filter_checkbox_3"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_gravity="center_vertical|right" />
+                android:layout_gravity="center_vertical|right"
+                android:tag="@string/filter_3" />
 
         </LinearLayout>
 
@@ -128,8 +111,10 @@
             android:id="@+id/filter_4"
             android:layout_width="match_parent"
             android:layout_height="48dp"
+            android:background="?attr/selectableItemBackground"
             android:paddingLeft="16dp"
-            android:paddingRight="16dp">
+            android:paddingRight="16dp"
+            android:tag="@string/filter_4">
 
             <TextView
                 android:layout_width="0dp"
@@ -140,9 +125,11 @@
                 android:textColor="@android:color/black" />
 
             <CheckBox
+                android:id="@+id/filter_checkbox_4"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_gravity="center_vertical|right" />
+                android:layout_gravity="center_vertical|right"
+                android:tag="@string/filter_4" />
 
         </LinearLayout>
 
@@ -150,8 +137,10 @@
             android:id="@+id/filter_5"
             android:layout_width="match_parent"
             android:layout_height="48dp"
+            android:background="?attr/selectableItemBackground"
             android:paddingLeft="16dp"
-            android:paddingRight="16dp">
+            android:paddingRight="16dp"
+            android:tag="@string/filter_5">
 
             <TextView
                 android:layout_width="0dp"
@@ -162,9 +151,11 @@
                 android:textColor="@android:color/black" />
 
             <CheckBox
+                android:id="@+id/filter_checkbox_5"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_gravity="center_vertical|right" />
+                android:layout_gravity="center_vertical|right"
+                android:tag="@string/filter_5" />
 
         </LinearLayout>
 
@@ -172,8 +163,10 @@
             android:id="@+id/filter_6"
             android:layout_width="match_parent"
             android:layout_height="48dp"
+            android:background="?attr/selectableItemBackground"
             android:paddingLeft="16dp"
-            android:paddingRight="16dp">
+            android:paddingRight="16dp"
+            android:tag="@string/filter_6">
 
             <TextView
                 android:layout_width="0dp"
@@ -184,9 +177,11 @@
                 android:textColor="@android:color/black" />
 
             <CheckBox
+                android:id="@+id/filter_checkbox_6"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_gravity="center_vertical|right" />
+                android:layout_gravity="center_vertical|right"
+                android:tag="@string/filter_6" />
 
         </LinearLayout>
 
@@ -194,8 +189,10 @@
             android:id="@+id/filter_7"
             android:layout_width="match_parent"
             android:layout_height="48dp"
+            android:background="?attr/selectableItemBackground"
             android:paddingLeft="16dp"
-            android:paddingRight="16dp">
+            android:paddingRight="16dp"
+            android:tag="@string/filter_7">
 
             <TextView
                 android:layout_width="0dp"
@@ -206,9 +203,11 @@
                 android:textColor="@android:color/black" />
 
             <CheckBox
+                android:id="@+id/filter_checkbox_7"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_gravity="center_vertical|right" />
+                android:layout_gravity="center_vertical|right"
+                android:tag="@string/filter_7" />
 
         </LinearLayout>
 
@@ -216,8 +215,10 @@
             android:id="@+id/filter_8"
             android:layout_width="match_parent"
             android:layout_height="48dp"
+            android:background="?attr/selectableItemBackground"
             android:paddingLeft="16dp"
-            android:paddingRight="16dp">
+            android:paddingRight="16dp"
+            android:tag="@string/filter_8">
 
             <TextView
                 android:layout_width="0dp"
@@ -228,9 +229,11 @@
                 android:textColor="@android:color/black" />
 
             <CheckBox
+                android:id="@+id/filter_checkbox_8"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_gravity="center_vertical|right" />
+                android:layout_gravity="center_vertical|right"
+                android:tag="@string/filter_8" />
 
         </LinearLayout>
 
