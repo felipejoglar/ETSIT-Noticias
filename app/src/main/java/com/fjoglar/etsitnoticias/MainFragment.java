@@ -48,8 +48,8 @@ public class MainFragment extends Fragment implements LoaderManager.LoaderCallba
     private static final int RSS_LOADER = 0;
 
     private RssItemAdapter mRssItemAdapter;
-    private SwipeRefreshLayout mSwipeRefreshLayout;
     private BroadcastReceiver mBroadcastReceiver;
+    private SwipeRefreshLayout mSwipeRefreshLayout;
 
     /**
      * Una interfaz de Callback que todas las actividades que contienen este fragment deben
@@ -275,12 +275,7 @@ public class MainFragment extends Fragment implements LoaderManager.LoaderCallba
         mRssItemAdapter.swapCursor(null);
     }
 
-//    public void backButtonWasPressed() {
-//        if (mDrawerLayout != null && mDrawerLayout.isDrawerOpen(GravityCompat.END)) {
-//            mDrawerLayout.closeDrawer(GravityCompat.END);
-//        } else {
-//            getFragmentManager().popBackStack();
-//        }
-//    }
-
+    public void reloadFragment() {
+        getLoaderManager().restartLoader(RSS_LOADER, null, this);
+    }
 }

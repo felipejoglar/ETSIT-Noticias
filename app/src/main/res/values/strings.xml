@@ -37,8 +37,20 @@
     <string name="pref_enable_notifications_label">Notificaciones</string>
     <string name="pref_enable_notifications_default" translatable="false">true</string>
 
+    <string name="pref_filter_1_key">destacados</string>
+    <string name="pref_filter_2_key">generales</string>
+    <string name="pref_filter_3_key">conferencias</string>
+    <string name="pref_filter_4_key">becas_practicas_empleo</string>
+    <string name="pref_filter_5_key">tg_tfm</string>
+    <string name="pref_filter_6_key">junta_escuela</string>
+    <string name="pref_filter_7_key">investigación</string>
+    <string name="pref_filter_8_key">otros</string>
+
+    <!-- Determina que noticia hay que abrir en primera instancia para la versión de tablets -->
+    <string name="pref_item_id_key">item_to_show</string>
+
     <!-- Relacionado con Notificaciones -->
-    <string name="notification_text">Tienes 1 nueva noticia</string>
+    <string name="notification_text">Tienes nuevas noticias</string>
 
     <!-- Relacionado con el resultado de la sincronización -->
     <string name="service_result">finalizado</string>
@@ -49,7 +61,6 @@
 
     <!-- Relacionado con Filtro y Categorias -->
     <string name="title_filter">Filtro</string>
-    <string name="filter_0">Todos</string>
     <string name="filter_1">Avisos destacados</string>
     <string name="filter_2">Avisos generales</string>
     <string name="filter_3">Conferencias/Charlas/Talleres</string>
@@ -58,4 +69,5 @@
     <string name="filter_6">Junta de Escuela</string>
     <string name="filter_7">Investigación</string>
     <string name="filter_8">Otros</string>
+
 </resources>

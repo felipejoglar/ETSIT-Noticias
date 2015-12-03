@@ -2,10 +2,14 @@ package com.fjoglar.etsitnoticias.data;
 
 import android.content.ContentProvider;
 import android.content.ContentValues;
+import android.content.SharedPreferences;
 import android.content.UriMatcher;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
+import android.preference.PreferenceManager;
+
+import com.fjoglar.etsitnoticias.R;
 
 public class RssProvider extends ContentProvider {
 
@@ -15,7 +19,6 @@ public class RssProvider extends ContentProvider {
 
     static final int RSS = 100;
     static final int RSS_ITEM = 101;
-    static final int RSS_WITH_FILTER = 102;
 
     static UriMatcher buildUriMatcher() {
         // All paths added to the UriMatcher have a corresponding code to return when a match is
@@ -27,7 +30,6 @@ public class RssProvider extends ContentProvider {
         // For each type of URI you want to add, create a corresponding code.
         matcher.addURI(authority, RssContract.PATH_RSS, RSS);
         matcher.addURI(authority, RssContract.PATH_RSS + "/#", RSS_ITEM);
-        matcher.addURI(authority, RssContract.PATH_RSS + "/*", RSS_WITH_FILTER);
 
         return matcher;
     }
@@ -49,8 +51,6 @@ public class RssProvider extends ContentProvider {
                 return RssContract.RssEntry.CONTENT_TYPE;
             case RSS_ITEM:
                 return RssContract.RssEntry.CONTENT_ITEM_TYPE;
-            case RSS_WITH_FILTER:
-                return RssContract.RssEntry.CONTENT_TYPE;
             default:
                 throw new UnsupportedOperationException("Unknown uri: " + uri);
         }
@@ -62,10 +62,50 @@ public class RssProvider extends ContentProvider {
         Cursor retCursor;
         switch (sUriMatcher.match(uri)) {
             case RSS: {
+                // Comprobamos las categorías que debemos mostrar.
+                String where = "";
+                SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getContext());
+                if (prefs.getBoolean(getContext().getString(R.string.pref_filter_1_key), true)) {
+                    where += "category = '12' OR ";
+                }
+                if (prefs.getBoolean(getContext().getString(R.string.pref_filter_2_key), true)) {
+                    where += "category = '1' OR ";
+                    where += "category = '2' OR ";
+                }
+                if (prefs.getBoolean(getContext().getString(R.string.pref_filter_3_key), true)) {
+                    where += "category = '11' OR ";
+                }
+                if (prefs.getBoolean(getContext().getString(R.string.pref_filter_4_key), true)) {
+                    where += "category = '3' OR ";
+                    where += "category = '4' OR ";
+                }
+                if (prefs.getBoolean(getContext().getString(R.string.pref_filter_5_key), true)) {
+                    where += "category = '5' OR ";
+                }
+                if (prefs.getBoolean(getContext().getString(R.string.pref_filter_6_key), true)) {
+                    where += "category = '15' OR ";
+                }
+                if (prefs.getBoolean(getContext().getString(R.string.pref_filter_7_key), true)) {
+                    where += "category = '16' OR ";
+                }
+                if (prefs.getBoolean(getContext().getString(R.string.pref_filter_8_key), true)) {
+                    where += "category = '6' OR ";
+                    where += "category = '7' OR ";
+                    where += "category = '8' OR ";
+                    where += "category = '9' OR ";
+                    where += "category = '10' OR ";
+                    where += "category = '13' OR ";
+                    where += "category = '14' OR ";
+                }
+                if (where.length() > 4)
+                    where = where.substring(0, where.length() - 4);
+                if (!prefs.getBoolean(getContext().getString(R.string.pref_filter_1_key), true) && where.equals(""))
+                    // En este caso no tenemos seleccionada ninguna categoría así que no se debería mostrar nada.
+                    where = "category = '99'";
                 retCursor = mRssDbHelper.getReadableDatabase().query(
                         RssContract.RssEntry.TABLE_NAME,
                         projection,
-                        selection,
+                        where,
                         selectionArgs,
                         null,
                         null,
@@ -87,19 +127,6 @@ public class RssProvider extends ContentProvider {
                 );
                 break;
 
-            }
-            // "rss/#"
-            case RSS_WITH_FILTER: {
-                retCursor = mRssDbHelper.getReadableDatabase().query(
-                        RssContract.RssEntry.TABLE_NAME,
-                        projection,
-                        selection,
-                        selectionArgs,
-                        null,
-                        null,
-                        sortOrder
-                );
-                break;
             }
             default:
                 throw new UnsupportedOperationException("Unknown uri: " + uri);

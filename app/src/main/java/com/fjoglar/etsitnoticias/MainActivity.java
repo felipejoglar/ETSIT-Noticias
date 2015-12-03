@@ -1,8 +1,10 @@
 package com.fjoglar.etsitnoticias;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AppCompatActivity;
@@ -11,8 +13,6 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.CheckBox;
 import android.widget.LinearLayout;
-
-import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity implements MainFragment.Callback {
 
@@ -23,6 +23,7 @@ public class MainActivity extends AppCompatActivity implements MainFragment.Call
 
     private boolean mTwoPane;
     private DrawerLayout mDrawerLayout;
+    SharedPreferences mPrefs;
 
     private LinearLayout mFilter1;
     private LinearLayout mFilter2;
@@ -53,22 +54,31 @@ public class MainActivity extends AppCompatActivity implements MainFragment.Call
                         assert checkBox != null;
                         if (checkBox.isChecked()) {
                             checkBox.setChecked(false);
+
                         } else {
                             checkBox.setChecked(true);
                         }
                         updateFilter();
+                        mFragment.reloadFragment();
+
                     } else if (view instanceof CheckBox) {
-                        CheckBox textView = (CheckBox) view;
-                        // do what you want with textView
+                        updateFilter();
+                        mFragment.reloadFragment();
                     }
 
                 }
             };
 
+    private MainFragment mFragment;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        mPrefs = PreferenceManager.getDefaultSharedPreferences(this);
+
+        mFragment = (MainFragment) getSupportFragmentManager().findFragmentById(R.id.fragment_main);
 
         // Declaramos la barra de navegación lateral.
         mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -76,6 +86,9 @@ public class MainActivity extends AppCompatActivity implements MainFragment.Call
 
         // Inicializamos las vistas del filtro.
         initializaFilterViews();
+
+        // Comprobamos los filtros que están activados.
+        checkActivatedFilters();
 
         // Vinculamos los Listeners a las vistas del filtro.
         attachListeners();
@@ -170,6 +183,17 @@ public class MainActivity extends AppCompatActivity implements MainFragment.Call
         mCheckBoxFilter8 = (CheckBox) findViewById(R.id.filter_checkbox_8);
     }
 
+    private void checkActivatedFilters() {
+        mCheckBoxFilter1.setChecked(mPrefs.getBoolean(getString(R.string.pref_filter_1_key), true));
+        mCheckBoxFilter2.setChecked(mPrefs.getBoolean(getString(R.string.pref_filter_2_key), true));
+        mCheckBoxFilter3.setChecked(mPrefs.getBoolean(getString(R.string.pref_filter_3_key), true));
+        mCheckBoxFilter4.setChecked(mPrefs.getBoolean(getString(R.string.pref_filter_4_key), true));
+        mCheckBoxFilter5.setChecked(mPrefs.getBoolean(getString(R.string.pref_filter_5_key), true));
+        mCheckBoxFilter6.setChecked(mPrefs.getBoolean(getString(R.string.pref_filter_6_key), true));
+        mCheckBoxFilter7.setChecked(mPrefs.getBoolean(getString(R.string.pref_filter_7_key), true));
+        mCheckBoxFilter8.setChecked(mPrefs.getBoolean(getString(R.string.pref_filter_8_key), true));
+    }
+
     private void attachListeners() {
         mFilter1.setOnClickListener(mDrawerItemCheckBoxClickListener);
         mFilter2.setOnClickListener(mDrawerItemCheckBoxClickListener);
@@ -214,38 +238,52 @@ public class MainActivity extends AppCompatActivity implements MainFragment.Call
 
     private void updateFilter() {
         // Comprobamos las categorías que queremos mostrar.
-        ArrayList<String> categoriesToFilter = new ArrayList<>();
         if (mCheckBoxFilter1.isChecked()) {
-            categoriesToFilter.add("12");
+            mPrefs.edit().putBoolean(getString(R.string.pref_filter_1_key), true).apply();
+        } else {
+            mPrefs.edit().putBoolean(getString(R.string.pref_filter_1_key), false).apply();
         }
+
         if (mCheckBoxFilter2.isChecked()) {
-            categoriesToFilter.add("1");
-            categoriesToFilter.add("2");
+            mPrefs.edit().putBoolean(getString(R.string.pref_filter_2_key), true).apply();
+        } else {
+            mPrefs.edit().putBoolean(getString(R.string.pref_filter_2_key), false).apply();
         }
+
         if (mCheckBoxFilter3.isChecked()) {
-            categoriesToFilter.add("11");
+            mPrefs.edit().putBoolean(getString(R.string.pref_filter_3_key), true).apply();
+        } else {
+            mPrefs.edit().putBoolean(getString(R.string.pref_filter_3_key), false).apply();
         }
+
         if (mCheckBoxFilter4.isChecked()) {
-            categoriesToFilter.add("3");
-            categoriesToFilter.add("4");
+            mPrefs.edit().putBoolean(getString(R.string.pref_filter_4_key), true).apply();
+        } else {
+            mPrefs.edit().putBoolean(getString(R.string.pref_filter_4_key), false).apply();
         }
+
         if (mCheckBoxFilter5.isChecked()) {
-            categoriesToFilter.add("5");
+            mPrefs.edit().putBoolean(getString(R.string.pref_filter_5_key), true).apply();
+        } else {
+            mPrefs.edit().putBoolean(getString(R.string.pref_filter_5_key), false).apply();
         }
+
         if (mCheckBoxFilter6.isChecked()) {
-            categoriesToFilter.add("15");
+            mPrefs.edit().putBoolean(getString(R.string.pref_filter_6_key), true).apply();
+        } else {
+            mPrefs.edit().putBoolean(getString(R.string.pref_filter_6_key), false).apply();
         }
+
         if (mCheckBoxFilter7.isChecked()) {
-            categoriesToFilter.add("16");
+            mPrefs.edit().putBoolean(getString(R.string.pref_filter_7_key), true).apply();
+        } else {
+            mPrefs.edit().putBoolean(getString(R.string.pref_filter_7_key), false).apply();
         }
+
         if (mCheckBoxFilter8.isChecked()) {
-            categoriesToFilter.add("6");
-            categoriesToFilter.add("7");
-            categoriesToFilter.add("8");
-            categoriesToFilter.add("9");
-            categoriesToFilter.add("10");
-            categoriesToFilter.add("13");
-            categoriesToFilter.add("14");
+            mPrefs.edit().putBoolean(getString(R.string.pref_filter_8_key), true).apply();
+        } else {
+            mPrefs.edit().putBoolean(getString(R.string.pref_filter_8_key), false).apply();
         }
     }
 
