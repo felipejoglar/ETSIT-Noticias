@@ -3,7 +3,7 @@
     android:layout_width="@dimen/drawer_width"
     android:layout_height="match_parent"
     android:layout_gravity="end"
-    android:background="@color/navdrawer_background"
+    android:background="@color/navdrawer_bg"
     android:clickable="true"
     android:fitsSystemWindows="true">
 

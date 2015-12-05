@@ -1,9 +1,11 @@
 package com.fjoglar.etsitnoticias;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
@@ -87,7 +89,8 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
         if (arguments != null) {
             mUri = arguments.getParcelable(DetailFragment.DETAIL_URI);
         } else {
-            mUri = RssContract.RssEntry.buildRssWithId(1);
+            SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getContext());
+            mUri = RssContract.RssEntry.buildRssWithId(prefs.getLong(getString(R.string.pref_item_id_key), 1));
         }
 
         return inflater.inflate(R.layout.fragment_detail, container, false);

@@ -3,11 +3,9 @@
     <color name="colorPrimary">#FF2C3E50</color>
     <color name="colorPrimaryDark">#FF161F29</color>
     <color name="colorAccent">#FFE67E22</color>
+    <color name="colorPrimaryLight">#FF809CB9</color>
 
-    <color name="grey">#FFE0E0E0</color>
-    <color name="background">#FFEEEEEE</color>
-
-    <color name="selector_light_blue_grey">#FF587C9E</color>
-    <color name="navdrawer_background">#FFFFFFFF</color>
+    <color name="splash_screen_bg">#FFEEEEEE</color>
+    <color name="navdrawer_bg">#FFFFFFFF</color>
 
 </resources>

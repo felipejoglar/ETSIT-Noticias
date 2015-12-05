@@ -8,8 +8,6 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.database.Cursor;
-import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
@@ -19,7 +17,6 @@ import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v4.widget.SwipeRefreshLayout;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -36,7 +33,8 @@ import com.fjoglar.etsitnoticias.service.DownloadRssService;
 import java.util.Calendar;
 
 
-public class MainFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor>, SwipeRefreshLayout.OnRefreshListener {
+public class MainFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor>,
+        SwipeRefreshLayout.OnRefreshListener, SharedPreferences.OnSharedPreferenceChangeListener {
 
     private static final String LOG_TAG = MainFragment.class.getSimpleName();
 
@@ -99,7 +97,7 @@ public class MainFragment extends Fragment implements LoaderManager.LoaderCallba
             @Override
             public void onReceive(Context context, Intent intent) {
                 String message = intent.getStringExtra(DownloadRssService.SERVICE_MESSAGE);
-                if (message.equals(getActivity().getString(R.string.service_result)) && mSwipeRefreshLayout != null) {
+                if (message.equals(getContext().getString(R.string.service_result)) && mSwipeRefreshLayout != null) {
                     mSwipeRefreshLayout.setRefreshing(false);
                 }
             }
@@ -117,7 +115,7 @@ public class MainFragment extends Fragment implements LoaderManager.LoaderCallba
 
         int id = item.getItemId();
         if (id == R.id.action_settings) {
-            startActivity(new Intent(getActivity(), SettingsActivity.class));
+            startActivity(new Intent(getContext(), SettingsActivity.class));
             return true;
         }
         return super.onOptionsItemSelected(item);
@@ -127,7 +125,7 @@ public class MainFragment extends Fragment implements LoaderManager.LoaderCallba
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
 
-        mRssItemAdapter = new RssItemAdapter(getActivity(), null, 0);
+        mRssItemAdapter = new RssItemAdapter(getContext(), null, 0);
 
         View rootView = inflater.inflate(R.layout.fragment_main, container, false);
 
@@ -146,11 +144,10 @@ public class MainFragment extends Fragment implements LoaderManager.LoaderCallba
 
                 Cursor cursor = (Cursor) adapterView.getItemAtPosition(position);
                 if (cursor != null) {
-                    ((Callback) getActivity())
+                    ((Callback) getContext())
                             .onItemSelected(RssContract.RssEntry.buildRssWithId(
                                     cursor.getLong(COL_RSS_ID)
                             ));
-                    Log.d(LOG_TAG, RssContract.RssEntry.buildRssWithId(cursor.getLong(COL_RSS_ID)).toString());
                 }
                 mPosition = position;
             }
@@ -181,15 +178,29 @@ public class MainFragment extends Fragment implements LoaderManager.LoaderCallba
     @Override
     public void onStart() {
         super.onStart();
-        LocalBroadcastManager.getInstance(getActivity()).registerReceiver((mBroadcastReceiver),
+        LocalBroadcastManager.getInstance(getContext()).registerReceiver((mBroadcastReceiver),
                 new IntentFilter(DownloadRssService.SERVICE_RESULT)
         );
     }
 
     @Override
     public void onStop() {
-        LocalBroadcastManager.getInstance(getActivity()).unregisterReceiver(mBroadcastReceiver);
+        LocalBroadcastManager.getInstance(getContext()).unregisterReceiver(mBroadcastReceiver);
         super.onStop();
+    }
+
+    @Override
+    public void onResume() {
+        SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(getActivity());
+        sp.registerOnSharedPreferenceChangeListener(this);
+        super.onResume();
+    }
+
+    @Override
+    public void onPause() {
+        SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(getActivity());
+        sp.unregisterOnSharedPreferenceChangeListener(this);
+        super.onPause();
     }
 
     @Override
@@ -202,23 +213,20 @@ public class MainFragment extends Fragment implements LoaderManager.LoaderCallba
         // Si la última actualización ha sido hace menos de 10 minutos no actualizamos directamente
         // así evitamos conexiones innecesarias cuando se rota la pantalla y conseguimos
         // un ahorro de batería, importente en dispositivos móviles.
-        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getActivity());
-        if (System.currentTimeMillis() - prefs.getLong(getActivity().getString(R.string.pref_last_updated_key), 0) > 10 * 60 * 1000) {
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getContext());
+        if (System.currentTimeMillis() - prefs.getLong(getContext().getString(R.string.pref_last_updated_key), 0) > 10 * 60 * 1000) {
             mSwipeRefreshLayout.setRefreshing(true);
-            // Comprueba la conexión de red.
-            ConnectivityManager connMgr = (ConnectivityManager) getActivity().getSystemService(Context.CONNECTIVITY_SERVICE);
-            NetworkInfo activeInfo = connMgr.getActiveNetworkInfo();
-            if (activeInfo != null && activeInfo.isConnected()) {
-                Intent intent = new Intent(getActivity(), DownloadRssService.class);
-                getActivity().startService(intent);
+            if (Utility.isNetworkAvailable(getActivity())) {
+                Intent intent = new Intent(getContext(), DownloadRssService.class);
+                getContext().startService(intent);
             } else {
                 mSwipeRefreshLayout.setRefreshing(false);
             }
         }
 
-        AlarmManager alarmMgr = (AlarmManager) getActivity().getSystemService(Context.ALARM_SERVICE);
-        Intent intent = new Intent(getActivity(), DownloadRssService.AlarmReceiver.class);
-        PendingIntent alarmIntent = PendingIntent.getBroadcast(getActivity(), 0, intent, 0);
+        AlarmManager alarmMgr = (AlarmManager) getContext().getSystemService(Context.ALARM_SERVICE);
+        Intent intent = new Intent(getContext(), DownloadRssService.AlarmReceiver.class);
+        PendingIntent alarmIntent = PendingIntent.getBroadcast(getContext(), 0, intent, 0);
 
         // Ponemos una alarma aproximadamente a las 00:00 horas.
         // Se trata de poder temporizar la sincronización de la aplicación para así
@@ -228,7 +236,7 @@ public class MainFragment extends Fragment implements LoaderManager.LoaderCallba
         calendar.set(Calendar.HOUR_OF_DAY, 0);
 
         // Obtenemos el periodo de sincronización.
-        int syncInterval = Integer.parseInt(prefs.getString(getActivity().getString(R.string.pref_sync_frequency_key), "6"));
+        int syncInterval = Integer.parseInt(prefs.getString(getContext().getString(R.string.pref_sync_frequency_key), "6"));
         alarmMgr.setInexactRepeating(AlarmManager.RTC_WAKEUP,
                 calendar.getTimeInMillis(),
                 AlarmManager.INTERVAL_HOUR * syncInterval,
@@ -252,7 +260,7 @@ public class MainFragment extends Fragment implements LoaderManager.LoaderCallba
         String sortOrder = RssContract.RssEntry.COLUMN_PUB_DATE + " DESC";
         Uri rssUri = RssContract.RssEntry.CONTENT_URI;
 
-        return new CursorLoader(getActivity(),
+        return new CursorLoader(getContext(),
                 rssUri,
                 RSS_COLUMNS,
                 null,
@@ -275,7 +283,21 @@ public class MainFragment extends Fragment implements LoaderManager.LoaderCallba
         mRssItemAdapter.swapCursor(null);
     }
 
+    @Override
+    public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
+        if ( key.equals(getString(R.string.pref_item_id_key)) && MainActivity.mTwoPane ) {
+            ((Callback) getContext())
+                    .onItemSelected(RssContract.RssEntry.buildRssWithId(
+                            sharedPreferences.getLong(getString(R.string.pref_item_id_key), 1)
+                    ));
+        }
+    }
+
     public void reloadFragment() {
         getLoaderManager().restartLoader(RSS_LOADER, null, this);
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getContext());
+        prefs.edit().putBoolean(getContext().getString(R.string.pref_modify_item_id_key),
+                true).apply();
     }
+
 }

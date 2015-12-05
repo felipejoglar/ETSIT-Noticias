@@ -1,7 +1,9 @@
 package com.fjoglar.etsitnoticias.adapter;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.database.Cursor;
+import android.preference.PreferenceManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -21,6 +23,8 @@ public class RssItemAdapter extends CursorAdapter {
 
     // Etiqueta para los logs de depuración.
     private final String LOG_TAG = RssItemAdapter.class.getSimpleName();
+
+    private SharedPreferences mPrefs;
 
     /**
      * Cache de las vistas de un objeto de la lista.
@@ -45,6 +49,9 @@ public class RssItemAdapter extends CursorAdapter {
      */
     public RssItemAdapter(Context context, Cursor c, int flags) {
         super(context, c, flags);
+        mPrefs = PreferenceManager.getDefaultSharedPreferences(context);
+        mPrefs.edit().putBoolean(context.getString(R.string.pref_modify_item_id_key),
+                true).apply();
     }
 
 
@@ -63,6 +70,15 @@ public class RssItemAdapter extends CursorAdapter {
     public void bindView(View view, Context context, Cursor cursor) {
 
         ViewHolder viewHolder = (ViewHolder) view.getTag();
+        // Modificamos la noticia a mostrar en la vista de detalle para el modo de
+        // dos paneles, de esta manera se cargará automaticamente la primera noticia
+        // de la lista.
+        if (mPrefs.getBoolean(context.getString(R.string.pref_modify_item_id_key), true)) {
+            mPrefs.edit().putLong(context.getString(R.string.pref_item_id_key),
+                    cursor.getLong(MainFragment.COL_RSS_ID)).apply();
+            mPrefs.edit().putBoolean(context.getString(R.string.pref_modify_item_id_key),
+                    false).apply();
+        }
 
         // Formateamos la fecha.
         Long dateInMillis = cursor.getLong(MainFragment.COL_RSS_PUB_DATE);
@@ -81,7 +97,7 @@ public class RssItemAdapter extends CursorAdapter {
 
     /**
      * Coge la fecha de la noticia y la devuelve en un formato más adecuado para
-     * las lectura en un ListView, pudiendo identificar de un vistazo, hace cuanto
+     * la lectura en un ListView, pudiendo identificar de un vistazo, hace cuanto
      * salió la noticia.
      *
      * @param pDate Fecha de la noticia como String en formato "yyyy-MM-dd HH:mm:ss".

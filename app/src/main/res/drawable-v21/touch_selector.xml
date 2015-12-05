@@ -2,10 +2,10 @@
 <selector xmlns:android="http://schemas.android.com/apk/res/android">
 
     <item android:state_pressed="true">
-        <ripple android:color="@color/grey" />
+        <ripple android:color="?attr/colorControlHighlight" />
     </item>
 
-    <item android:drawable="@color/selector_light_blue_grey" android:state_activated="true" />
+    <item android:drawable="@color/colorPrimaryLight" android:state_activated="true" />
 
     <item android:drawable="@android:color/transparent" />
 

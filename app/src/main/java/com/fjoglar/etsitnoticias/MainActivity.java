@@ -21,9 +21,9 @@ public class MainActivity extends AppCompatActivity implements MainFragment.Call
 
     private static final String DETAILFRAGMENT_TAG = "DFTAG";
 
-    private boolean mTwoPane;
+    public static boolean mTwoPane;
     private DrawerLayout mDrawerLayout;
-    SharedPreferences mPrefs;
+    private SharedPreferences mPrefs;
 
     private LinearLayout mFilter1;
     private LinearLayout mFilter2;
