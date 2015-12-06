@@ -1,5 +1,5 @@
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
+    android:layout_width="wrap_content"
     android:layout_height="match_parent">
 
     <CheckBoxPreference
@@ -9,6 +9,7 @@
 
     <ListPreference
         android:defaultValue="@string/pref_sync_frequency_six"
+        android:dependency="@string/pref_enable_notifications_key"
         android:entries="@array/pref_sync_frequency_options"
         android:entryValues="@array/pref_sync_frequency_values"
         android:key="@string/pref_sync_frequency_key"

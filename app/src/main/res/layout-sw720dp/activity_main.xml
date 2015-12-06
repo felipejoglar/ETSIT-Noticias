@@ -17,7 +17,6 @@
         <!--
         Este es un layout de dos paneles adaptado para tablets.
         -->
-
         <fragment
             android:id="@+id/fragment_main"
             android:name="com.fjoglar.etsitnoticias.MainFragment"

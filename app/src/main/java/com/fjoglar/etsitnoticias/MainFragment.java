@@ -1,7 +1,5 @@
 package com.fjoglar.etsitnoticias;
 
-import android.app.AlarmManager;
-import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -25,18 +23,14 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ListView;
+import android.widget.TextView;
 
 import com.fjoglar.etsitnoticias.adapter.RssItemAdapter;
 import com.fjoglar.etsitnoticias.data.RssContract;
 import com.fjoglar.etsitnoticias.service.DownloadRssService;
 
-import java.util.Calendar;
-
-
 public class MainFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor>,
         SwipeRefreshLayout.OnRefreshListener, SharedPreferences.OnSharedPreferenceChangeListener {
-
-    private static final String LOG_TAG = MainFragment.class.getSimpleName();
 
     private ListView mListView;
     private int mPosition = ListView.INVALID_POSITION;
@@ -48,6 +42,7 @@ public class MainFragment extends Fragment implements LoaderManager.LoaderCallba
     private RssItemAdapter mRssItemAdapter;
     private BroadcastReceiver mBroadcastReceiver;
     private SwipeRefreshLayout mSwipeRefreshLayout;
+    private SwipeRefreshLayout mSwipeRefreshLayoutEmpty;
 
     /**
      * Una interfaz de Callback que todas las actividades que contienen este fragment deben
@@ -58,7 +53,7 @@ public class MainFragment extends Fragment implements LoaderManager.LoaderCallba
         /**
          * DetailFragmentCallback para cuando un item ha sido seleccionado.
          */
-        public void onItemSelected(Uri dateUri);
+        void onItemSelected(Uri dateUri);
     }
 
     // Para la vista de lista sólo necesitamos una parte de los datos almacenados.
@@ -97,8 +92,9 @@ public class MainFragment extends Fragment implements LoaderManager.LoaderCallba
             @Override
             public void onReceive(Context context, Intent intent) {
                 String message = intent.getStringExtra(DownloadRssService.SERVICE_MESSAGE);
-                if (message.equals(getContext().getString(R.string.service_result)) && mSwipeRefreshLayout != null) {
+                if (message.equals(getContext().getString(R.string.service_result)) && (mSwipeRefreshLayout != null || mSwipeRefreshLayoutEmpty != null)) {
                     mSwipeRefreshLayout.setRefreshing(false);
+                    mSwipeRefreshLayoutEmpty.setRefreshing(false);
                 }
             }
         };
@@ -112,7 +108,7 @@ public class MainFragment extends Fragment implements LoaderManager.LoaderCallba
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-
+        // Lanzamos la actitivdad de Ajustes.
         int id = item.getItemId();
         if (id == R.id.action_settings) {
             startActivity(new Intent(getContext(), SettingsActivity.class));
@@ -131,10 +127,13 @@ public class MainFragment extends Fragment implements LoaderManager.LoaderCallba
 
         // Declaramos SwipeToRefresh.
         mSwipeRefreshLayout = (SwipeRefreshLayout) rootView.findViewById(R.id.swipe_to_refresh);
+        mSwipeRefreshLayoutEmpty = (SwipeRefreshLayout) rootView.findViewById(R.id.swipe_to_refresh_emptyView);
         mSwipeRefreshLayout.setColorSchemeResources(R.color.colorAccent);
+        mSwipeRefreshLayoutEmpty.setColorSchemeResources(R.color.colorAccent);
 
         // Obtenemos una referencia al ListView y vinculamos el adaptador.
         mListView = (ListView) rootView.findViewById(R.id.listview_rss);
+        mListView.setEmptyView(mSwipeRefreshLayoutEmpty);
         mListView.setAdapter(mRssItemAdapter);
 
         mListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -153,17 +152,23 @@ public class MainFragment extends Fragment implements LoaderManager.LoaderCallba
             }
         });
 
-
         if (savedInstanceState != null && savedInstanceState.containsKey(SELECTED_KEY)) {
             mPosition = savedInstanceState.getInt(SELECTED_KEY);
         }
 
         mSwipeRefreshLayout.setOnRefreshListener(this);
+        mSwipeRefreshLayoutEmpty.setOnRefreshListener(this);
         // Al iniciar la aplicación actualizamos los datos.
         mSwipeRefreshLayout.post(new Runnable() {
             @Override
             public void run() {
-                updateData();
+                updateData(false);
+            }
+        });
+        mSwipeRefreshLayoutEmpty.post(new Runnable() {
+            @Override
+            public void run() {
+                updateData(false);
             }
         });
 
@@ -172,7 +177,7 @@ public class MainFragment extends Fragment implements LoaderManager.LoaderCallba
 
     @Override
     public void onRefresh() {
-        updateData();
+        updateData(true);
     }
 
     @Override
@@ -209,41 +214,6 @@ public class MainFragment extends Fragment implements LoaderManager.LoaderCallba
         super.onActivityCreated(savedInstanceState);
     }
 
-    private void updateData() {
-        // Si la última actualización ha sido hace menos de 10 minutos no actualizamos directamente
-        // así evitamos conexiones innecesarias cuando se rota la pantalla y conseguimos
-        // un ahorro de batería, importente en dispositivos móviles.
-        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getContext());
-        if (System.currentTimeMillis() - prefs.getLong(getContext().getString(R.string.pref_last_updated_key), 0) > 10 * 60 * 1000) {
-            mSwipeRefreshLayout.setRefreshing(true);
-            if (Utility.isNetworkAvailable(getActivity())) {
-                Intent intent = new Intent(getContext(), DownloadRssService.class);
-                getContext().startService(intent);
-            } else {
-                mSwipeRefreshLayout.setRefreshing(false);
-            }
-        }
-
-        AlarmManager alarmMgr = (AlarmManager) getContext().getSystemService(Context.ALARM_SERVICE);
-        Intent intent = new Intent(getContext(), DownloadRssService.AlarmReceiver.class);
-        PendingIntent alarmIntent = PendingIntent.getBroadcast(getContext(), 0, intent, 0);
-
-        // Ponemos una alarma aproximadamente a las 00:00 horas.
-        // Se trata de poder temporizar la sincronización de la aplicación para así
-        // poder enviar notificaciones al usuario.
-        Calendar calendar = Calendar.getInstance();
-        calendar.setTimeInMillis(System.currentTimeMillis());
-        calendar.set(Calendar.HOUR_OF_DAY, 0);
-
-        // Obtenemos el periodo de sincronización.
-        int syncInterval = Integer.parseInt(prefs.getString(getContext().getString(R.string.pref_sync_frequency_key), "6"));
-        alarmMgr.setInexactRepeating(AlarmManager.RTC_WAKEUP,
-                calendar.getTimeInMillis(),
-                AlarmManager.INTERVAL_HOUR * syncInterval,
-                alarmIntent);
-
-    }
-
     @Override
     public void onSaveInstanceState(Bundle outState) {
         // Guardamos el item seleccionado cuando la tableta rota.
@@ -276,6 +246,7 @@ public class MainFragment extends Fragment implements LoaderManager.LoaderCallba
         } else {
             mListView.setItemChecked(0, true);
         }
+        updateEmptyView();
     }
 
     @Override
@@ -285,7 +256,7 @@ public class MainFragment extends Fragment implements LoaderManager.LoaderCallba
 
     @Override
     public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
-        if ( key.equals(getString(R.string.pref_item_id_key)) && MainActivity.mTwoPane ) {
+        if (key.equals(getString(R.string.pref_item_id_key)) && MainActivity.mTwoPane) {
             ((Callback) getContext())
                     .onItemSelected(RssContract.RssEntry.buildRssWithId(
                             sharedPreferences.getLong(getString(R.string.pref_item_id_key), 1)
@@ -293,11 +264,69 @@ public class MainFragment extends Fragment implements LoaderManager.LoaderCallba
         }
     }
 
+    /**
+     * Lanza un servicio para que actualice los datos en segundo plano y configura
+     * la alarma de sincronización.
+     */
+    private void updateData(Boolean forceUpdate) {
+
+        mSwipeRefreshLayout.setRefreshing(true);
+        mSwipeRefreshLayoutEmpty.setRefreshing(true);
+
+        // Si la última actualización ha sido hace menos de 10 minutos no actualizamos directamente
+        // así evitamos conexiones innecesarias cuando se rota la pantalla y conseguimos
+        // un ahorro de batería, importente en dispositivos móviles.
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getContext());
+        if (System.currentTimeMillis() - prefs.getLong(getContext().getString(R.string.pref_last_updated_key), 0) > 10 * 60 * 1000) {
+            if (Utility.isNetworkAvailable(getContext())) {
+                startService();
+            } else {
+                mSwipeRefreshLayout.setRefreshing(false);
+                mSwipeRefreshLayoutEmpty.setRefreshing(false);
+            }
+        } else if (forceUpdate) {
+            startService();
+        } else {
+            mSwipeRefreshLayout.setRefreshing(false);
+            mSwipeRefreshLayoutEmpty.setRefreshing(false);
+        }
+
+    }
+
+    /**
+     * Empieza el servicio de actualización en segundo plano.
+     */
+    private void startService() {
+        Intent sendIntent = new Intent(getContext(), DownloadRssService.class);
+        getContext().startService(sendIntent);
+    }
+
+    /**
+     * Recarga la lista de noticias cuando se modifica el filtro. De esta manera tenemos
+     * la nueva lista disponible de manera inmediata.
+     */
     public void reloadFragment() {
         getLoaderManager().restartLoader(RSS_LOADER, null, this);
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getContext());
         prefs.edit().putBoolean(getContext().getString(R.string.pref_modify_item_id_key),
                 true).apply();
+    }
+
+    /*
+        Actualiza la lista vacía con informacion relevante para que el usuario pueda
+        determinar porque no está viendo información.
+     */
+    private void updateEmptyView() {
+        if (mRssItemAdapter.getCount() == 0) {
+            TextView tv = (TextView) getView().findViewById(R.id.listview_empty);
+            if (null != tv) {
+                int message = R.string.empty_list;
+                if (!Utility.isNetworkAvailable(getActivity())) {
+                    message = R.string.empty_list_no_network;
+                }
+                tv.setText(message);
+            }
+        }
     }
 
 }

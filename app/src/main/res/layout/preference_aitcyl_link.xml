@@ -4,6 +4,7 @@
     android:layout_height="wrap_content"
     android:adjustViewBounds="true"
     android:contentDescription="@string/aitcyl_banner"
+    android:maxHeight="@dimen/pref_image_max_height"
     android:src="@drawable/logo_aitcyl">
 
 </ImageView>

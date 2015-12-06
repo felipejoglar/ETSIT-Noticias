@@ -19,7 +19,7 @@ public class RssContract {
     // Posibles paths (añadidos a la URI base)
     public static final String PATH_RSS = "rss";
 
-    /* Clase que define los contenidos de tabla RSS. */
+    // Clase que define los contenidos de tabla RSS.
     public static final class RssEntry implements BaseColumns {
 
         public static final Uri CONTENT_URI =

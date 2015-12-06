@@ -1,7 +1,9 @@
 package com.fjoglar.etsitnoticias;
 
+import android.content.ComponentName;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
@@ -14,10 +16,9 @@ import android.view.View;
 import android.widget.CheckBox;
 import android.widget.LinearLayout;
 
-public class MainActivity extends AppCompatActivity implements MainFragment.Callback {
+import com.fjoglar.etsitnoticias.receiver.DeviceBootReceiver;
 
-    // Etiqueta para los logs de depuración.
-    private final String LOG_TAG = MainActivity.class.getSimpleName();
+public class MainActivity extends AppCompatActivity implements MainFragment.Callback {
 
     private static final String DETAILFRAGMENT_TAG = "DFTAG";
 
@@ -43,7 +44,7 @@ public class MainActivity extends AppCompatActivity implements MainFragment.Call
     private CheckBox mCheckBoxFilter7;
     private CheckBox mCheckBoxFilter8;
 
-    // OnClickListener para los checkbox del filtro.
+    // OnClickListener para el filtro.
     private final View.OnClickListener mDrawerItemCheckBoxClickListener =
             new View.OnClickListener() {
                 @Override
@@ -65,7 +66,6 @@ public class MainActivity extends AppCompatActivity implements MainFragment.Call
                         updateFilter();
                         mFragment.reloadFragment();
                     }
-
                 }
             };
 
@@ -77,15 +77,22 @@ public class MainActivity extends AppCompatActivity implements MainFragment.Call
         setContentView(R.layout.activity_main);
 
         mPrefs = PreferenceManager.getDefaultSharedPreferences(this);
-
         mFragment = (MainFragment) getSupportFragmentManager().findFragmentById(R.id.fragment_main);
+
+        // Habilitamos el BroadastReceiver, una vez habilitado permanece habilitado
+        // aunque reiniciemos.
+        ComponentName receiver = new ComponentName(this, DeviceBootReceiver.class);
+        PackageManager pm = this.getPackageManager();
+        pm.setComponentEnabledSetting(receiver,
+                PackageManager.COMPONENT_ENABLED_STATE_ENABLED,
+                PackageManager.DONT_KILL_APP);
 
         // Declaramos la barra de navegación lateral.
         mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
         mDrawerLayout.setDrawerShadow(R.drawable.drawer_shadow_flipped, GravityCompat.END);
 
         // Inicializamos las vistas del filtro.
-        initializaFilterViews();
+        initializeFilterViews();
 
         // Comprobamos los filtros que están activados.
         checkActivatedFilters();
@@ -94,9 +101,9 @@ public class MainActivity extends AppCompatActivity implements MainFragment.Call
         attachListeners();
 
         if (findViewById(R.id.detail_container) != null) {
-            // La vista detail_container se presentará sólo en grandes pantallas
-            // (res/layout-sw600dp). Si esta vista está presente, entonces la actividad
-            // debe estar en modo de dos paneles.
+            // La vista detail_container se presentará sólo en grandes pantallas.
+            // Si esta vista está presente, entonces la actividad debe estar
+            // en modo de dos paneles.
             mTwoPane = true;
 
             if (savedInstanceState == null) {
@@ -163,7 +170,7 @@ public class MainActivity extends AppCompatActivity implements MainFragment.Call
         }
     }
 
-    private void initializaFilterViews() {
+    private void initializeFilterViews() {
         mFilter1 = (LinearLayout) findViewById(R.id.filter_1);
         mFilter2 = (LinearLayout) findViewById(R.id.filter_2);
         mFilter3 = (LinearLayout) findViewById(R.id.filter_3);
@@ -236,6 +243,9 @@ public class MainActivity extends AppCompatActivity implements MainFragment.Call
         }
     }
 
+    /**
+     * Guarda los filtros seleccionados para mantenerlos aunque cerremos la aplicación.
+     */
     private void updateFilter() {
         // Comprobamos las categorías que queremos mostrar.
         if (mCheckBoxFilter1.isChecked()) {

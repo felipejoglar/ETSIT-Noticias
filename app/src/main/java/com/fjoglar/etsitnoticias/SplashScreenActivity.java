@@ -18,6 +18,7 @@ public class SplashScreenActivity extends Activity {
             e.printStackTrace();
         }
 
+        // Una vez finalizado el tiempo abrimos la actividad principal.
         Intent intent = new Intent(getApplicationContext(), MainActivity.class);
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);

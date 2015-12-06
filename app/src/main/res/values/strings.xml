@@ -46,6 +46,8 @@
     <string name="pref_filter_7_key">investigación</string>
     <string name="pref_filter_8_key">otros</string>
 
+    <string name="pref_rss_status_key" translatable="false">rss_status</string>
+
     <!-- Determina que noticia hay que abrir en primera instancia para la versión de tablets -->
     <string name="pref_modify_item_id_key">modify_item_to_show</string>
     <string name="pref_item_id_key">item_to_show</string>
@@ -70,5 +72,9 @@
     <string name="filter_6">Junta de Escuela</string>
     <string name="filter_7">Investigación</string>
     <string name="filter_8">Otros</string>
+
+    <!-- Empty Weather Database -->
+    <string name="empty_list">No hay información diponible.</string>
+    <string name="empty_list_no_network">No hay información diponible. La conexión no está disponible para obtener los datos.</string>
 
 </resources>

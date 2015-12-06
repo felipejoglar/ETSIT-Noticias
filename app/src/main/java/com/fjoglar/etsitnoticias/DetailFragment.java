@@ -24,10 +24,8 @@ import com.fjoglar.etsitnoticias.data.RssContract;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 
-
 public class DetailFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor> {
 
-    private static final String LOG_TAG = DetailFragment.class.getSimpleName();
     static final String DETAIL_URI = "URI";
     static final String SHARE_HASHTAG = "#NoticiasETSIT";
 
@@ -87,8 +85,15 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
 
         Bundle arguments = getArguments();
         if (arguments != null) {
+            // Si al fragment se le han pasado argumentos se carga la vista de la noticia
+            // que le han pasado.
             mUri = arguments.getParcelable(DetailFragment.DETAIL_URI);
         } else {
+            // Si no, se carga la vista de la noticia correspondiente al primer elemento de la
+            // lista en función del filtro.
+            // De esta manera evitamos que cuando la aplicación se ejecute en una tablet,
+            // la zona de detalle de la noticia no aparezca vacía, ademas se actualiza ésta
+            // dinámicamente cuando cambiamos los filtros.
             SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getContext());
             mUri = RssContract.RssEntry.buildRssWithId(prefs.getLong(getString(R.string.pref_item_id_key), 1));
         }
@@ -104,7 +109,6 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
 
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
-        Intent intent = getActivity().getIntent();
         if (null != mUri) {
 
             return new CursorLoader(
@@ -121,21 +125,29 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
 
     @Override
     public void onLoadFinished(Loader<Cursor> loader, final Cursor data) {
-        if (!data.moveToFirst()) {
-            return;
-        }
 
-        mShareText = data.getString(COL_RSS_TITLE)
-                + ". "
-                + data.getString(COL_RSS_LINK)
-                + " "
-                + SHARE_HASHTAG;
-
+        // Inicializamos las vistas.
         TextView detailTitle = (TextView) getView().findViewById(R.id.detail_title);
         TextView detailDate = (TextView) getView().findViewById(R.id.detail_date);
         TextView detailDescription = (TextView) getView().findViewById(R.id.detail_description);
         TextView detailCategory = (TextView) getView().findViewById(R.id.detail_category);
         Button detailLink = (Button) getView().findViewById(R.id.detail_link);
+
+        if (!data.moveToFirst()) {
+            detailTitle.setVisibility(View.GONE);
+            detailDate.setVisibility(View.GONE);
+            detailDescription.setVisibility(View.GONE);
+            detailCategory.setVisibility(View.GONE);
+            detailLink.setVisibility(View.GONE);
+            return;
+        }
+
+        // String para compartir la noticia.
+        mShareText = data.getString(COL_RSS_TITLE)
+                + ". "
+                + data.getString(COL_RSS_LINK)
+                + " "
+                + SHARE_HASHTAG;
 
         // Formateamos la fecha.
         Long dateInMillis = data.getLong(COL_RSS_PUB_DATE);
@@ -151,11 +163,14 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
         String year = String.valueOf(formatter.format(calendar.getTime()));
         String date = dayName + ", " + dayNumber + " de " + month + " de " + year + ".";
 
+        // Actualizamos las vistas.
         detailTitle.setText(data.getString(COL_RSS_TITLE));
         detailDate.setText(date);
         detailDescription.setText(data.getString(COL_RSS_DESC));
         detailCategory.setText(Utility.categoryToString(data.getString(COL_RSS_CATEGORY)));
 
+        // Al hacer click en el botón "Más Información" abrimos la web de la ETSIT de
+        // la noticia.
         detailLink.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -170,6 +185,11 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
 
     }
 
+    /**
+     * Abrimos la web.
+     *
+     * @param link enlace a abrir.
+     */
     private void moreInfo(String link) {
         Intent webIntent = new Intent(Intent.ACTION_VIEW);
         webIntent.setData(Uri.parse(link));
@@ -180,6 +200,11 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
 
     }
 
+    /**
+     * Compartimos la noticia.
+     *
+     * @param text texto a compartir.
+     */
     private void shareItem(String text) {
         Intent sharingIntent = new Intent(android.content.Intent.ACTION_SEND);
         sharingIntent.setType("text/plain");

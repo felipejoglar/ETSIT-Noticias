@@ -5,16 +5,13 @@ import android.support.v7.app.AppCompatActivity;
 
 public class DetailActivity extends AppCompatActivity {
 
-    // Etiqueta para los logs de depuración.
-    private final String LOG_TAG = DetailActivity.class.getSimpleName();
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_detail);
         if (savedInstanceState == null) {
-            // Create the detail fragment and add it to the activity
-            // using a fragment transaction.
+            // Creamos un fragment detalle y lo añadimos a la actividad
+            // usando un fragment transaction.
 
             Bundle arguments = new Bundle();
             arguments.putParcelable(DetailFragment.DETAIL_URI, getIntent().getData());

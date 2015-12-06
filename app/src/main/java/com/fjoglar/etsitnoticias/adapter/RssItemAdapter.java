@@ -14,15 +14,10 @@ import com.fjoglar.etsitnoticias.MainFragment;
 import com.fjoglar.etsitnoticias.R;
 import com.fjoglar.etsitnoticias.Utility;
 
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
-import java.util.Date;
 
 public class RssItemAdapter extends CursorAdapter {
-
-    // Etiqueta para los logs de depuración.
-    private final String LOG_TAG = RssItemAdapter.class.getSimpleName();
 
     private SharedPreferences mPrefs;
 
@@ -53,7 +48,6 @@ public class RssItemAdapter extends CursorAdapter {
         mPrefs.edit().putBoolean(context.getString(R.string.pref_modify_item_id_key),
                 true).apply();
     }
-
 
     @Override
     public View newView(Context context, Cursor cursor, ViewGroup parent) {
@@ -86,65 +80,14 @@ public class RssItemAdapter extends CursorAdapter {
         Calendar calendar = Calendar.getInstance();
         calendar.setTimeInMillis(dateInMillis);
         String date = String.valueOf(formatter.format(calendar.getTime()));
-        date = formatTime(date);
+        date = Utility.formatTime(date);
 
+        // Actualizamos las vistas.
         viewHolder.titleView.setText(cursor.getString(MainFragment.COL_RSS_TITLE));
         viewHolder.dateView.setText(date);
         viewHolder.descriptionView.setText(cursor.getString(MainFragment.COL_RSS_DESC));
         viewHolder.categoryView.setText(Utility.categoryToString(cursor.getString(MainFragment.COL_RSS_CATEGORY)));
 
-    }
-
-    /**
-     * Coge la fecha de la noticia y la devuelve en un formato más adecuado para
-     * la lectura en un ListView, pudiendo identificar de un vistazo, hace cuanto
-     * salió la noticia.
-     *
-     * @param pDate Fecha de la noticia como String en formato "yyyy-MM-dd HH:mm:ss".
-     * @return la fecha en el formato adecuado.
-     */
-    private String formatTime(String pDate) {
-        int diffInDays = 0;
-        SimpleDateFormat format = new SimpleDateFormat("EEE, d MMM yyyy HH:mm:ss z");
-        Calendar c = Calendar.getInstance();
-        String formattedDate = format.format(c.getTime());
-
-        Date d1 = null;
-        Date d2 = null;
-        try {
-
-            d1 = format.parse(formattedDate);
-            d2 = format.parse(pDate);
-            long diff = d1.getTime() - d2.getTime();
-
-            diffInDays = (int) (diff / (1000 * 60 * 60 * 24));
-            if (diffInDays > 0) {
-                if (diffInDays > 0 && diffInDays < 7) {
-                    return diffInDays + "d";
-                } else {
-                    SimpleDateFormat formatter = new SimpleDateFormat("d");
-                    Calendar calendar = Calendar.getInstance();
-                    calendar.setTimeInMillis(d2.getTime());
-                    String day = formatter.format(calendar.getTime());
-                    formatter = new SimpleDateFormat("MMM");
-                    String month = Utility.capitalizeWord(formatter.format(calendar.getTime()));
-                    return day + " " + month;
-                }
-            } else {
-                int diffHours = (int) (diff / (60 * 60 * 1000));
-                if (diffHours > 0) {
-                    return diffHours + "h";
-                } else {
-                    int diffMinutes = (int) ((diff / (60 * 1000) % 60));
-                    return diffMinutes + "m";
-                }
-            }
-
-        } catch (ParseException e) {
-            e.printStackTrace();
-        }
-
-        return null;
     }
 
 }

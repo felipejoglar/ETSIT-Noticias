@@ -14,10 +14,6 @@ import org.xmlpull.v1.XmlPullParserFactory;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.Locale;
 import java.util.Vector;
 
 /**
@@ -30,8 +26,6 @@ public class RssXmlParser {
     // Etiqueta para los logs de depuración.
     private final String LOG_TAG = RssXmlParser.class.getSimpleName();
 
-    private Context mContext;
-
     private final String TITLE_TAG = "title";
     private final String DESCRIPTION_TAG = "description";
     private final String LINK_TAG = "link";
@@ -43,8 +37,6 @@ public class RssXmlParser {
     private Vector<ContentValues> cVVector = new Vector<ContentValues>();
 
     public void parse(Context context, InputStream inputStream) throws XmlPullParserException, IOException {
-
-        mContext = context;
 
         try {
 
@@ -78,20 +70,19 @@ public class RssXmlParser {
                 // está en el tablón de www.etsit.es.
                 // También nos ayuda a que en modo tablet, nos muestre la última
                 // noticia cuando abrimos la aplicación.
-                mContext.getContentResolver().delete(RssContract.RssEntry.CONTENT_URI, null, null);
+                context.getContentResolver().delete(RssContract.RssEntry.CONTENT_URI, null, null);
 
                 ContentValues[] cvArray = new ContentValues[cVVector.size()];
                 cVVector.toArray(cvArray);
-                mContext.getContentResolver().bulkInsert(RssContract.RssEntry.CONTENT_URI, cvArray);
+                context.getContentResolver().bulkInsert(RssContract.RssEntry.CONTENT_URI, cvArray);
 
                 // Determinamos si hay que enviar notificación al usuario.
-                SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(mContext);
-                if (mLastDownloadedNew > prefs.getLong(mContext.getString(R.string.pref_last_updated_key), 0))
-                    prefs.edit().putBoolean(mContext.getString(R.string.pref_send_notification_key), true).apply();
-
+                SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+                if (mLastDownloadedNew > prefs.getLong(context.getString(R.string.pref_last_updated_key), 0))
+                    prefs.edit().putBoolean(context.getString(R.string.pref_send_notification_key), true).apply();
 
                 // Actualizamos la fecha de la última actualización.
-                prefs.edit().putLong(mContext.getString(R.string.pref_last_updated_key), System.currentTimeMillis()).apply();
+                prefs.edit().putLong(context.getString(R.string.pref_last_updated_key), System.currentTimeMillis()).apply();
             }
 
         } catch (XmlPullParserException e) {
@@ -154,7 +145,7 @@ public class RssXmlParser {
      * Guarda la noticia en la base de datos.
      */
     private void insertRss() {
-        long dateTime = ParseDate(mPubDate).getTime();
+        long dateTime = Utility.ParseDate(mPubDate).getTime();
 
         // No podemos tener una descripción nula.
         if (mDescription == null)
@@ -167,51 +158,13 @@ public class RssXmlParser {
 
         ContentValues rssValues = new ContentValues();
 
-        rssValues.put(RssContract.RssEntry.COLUMN_TITLE, formatText(mTitle));
-        rssValues.put(RssContract.RssEntry.COLUMN_DESCRIPTION, formatText(mDescription));
+        rssValues.put(RssContract.RssEntry.COLUMN_TITLE, Utility.formatText(mTitle));
+        rssValues.put(RssContract.RssEntry.COLUMN_DESCRIPTION, Utility.formatText(mDescription));
         rssValues.put(RssContract.RssEntry.COLUMN_LINK, mLink);
         rssValues.put(RssContract.RssEntry.COLUMN_CATEGORY, mCategory);
         rssValues.put(RssContract.RssEntry.COLUMN_PUB_DATE, dateTime);
 
         cVVector.add(rssValues);
-
-    }
-
-    /**
-     * Permite convertir un String en fecha (Date).
-     *
-     * @param date Cadena de fecha "EEE, d MMM yyyy HH:mm:ss z"
-     * @return Objeto   Date
-     */
-    private Date ParseDate(String date) {
-        SimpleDateFormat formatter = new SimpleDateFormat("EEE, d MMM yyyy HH:mm:ss z", Locale.US);
-        Date result = null;
-        try {
-            result = formatter.parse(date);
-        } catch (ParseException e) {
-            Log.e(LOG_TAG, e.getMessage(), e);
-            e.printStackTrace();
-        }
-        return result;
-    }
-
-    /**
-     * Formatea el texto para que sólo tenga carácteres impimibles. Además también
-     * corrige el problema de que en algunas descripciones hay muchos saltos de línea
-     * seguidos. De esta manera el texto queda visualmente más agradable
-     * y optimizado para su lectura.
-     *
-     * @param text Texto a formatear.
-     * @return texto formateado.
-     */
-    private String formatText(String text) {
-        text = text.replaceAll("[^\\s\\p{Print}]", "")
-                .replace(" ", "AuxText")
-                .replace("\r\nAuxText", "\r\n")
-                .replaceAll("[\\r\\n]+", "\n\n")
-                .replace("AuxText", " ");
-
-        return text;
     }
 
 }
