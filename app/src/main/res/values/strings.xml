@@ -24,7 +24,6 @@
     <string name="pref_sync_frequency_label_six">Cada 6 horas</string>
     <string name="pref_sync_frequency_label_twelve">Cada 12 horas</string>
     <string name="pref_sync_frequency_label_twenty_four">Cada día</string>
-
     <string name="pref_sync_frequency_one">1</string>
     <string name="pref_sync_frequency_three">3</string>
     <string name="pref_sync_frequency_six">6</string>
@@ -47,6 +46,8 @@
     <string name="pref_filter_8_key">otros</string>
 
     <string name="pref_rss_status_key" translatable="false">rss_status</string>
+
+    <string name="pref_first_boot_key" translatable="false">first_boot</string>
 
     <!-- Determina que noticia hay que abrir en primera instancia para la versión de tablets -->
     <string name="pref_modify_item_id_key">modify_item_to_show</string>

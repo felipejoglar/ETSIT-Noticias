@@ -167,12 +167,22 @@ public class MainFragment extends Fragment implements LoaderManager.LoaderCallba
                 updateData(false);
             }
         });
-        mSwipeRefreshLayoutEmpty.post(new Runnable() {
-            @Override
-            public void run() {
-                updateData(false);
-            }
-        });
+
+        // Comprobamos si es la primera vez que se inicia la aplicación, y si es así
+        // activamos la sincronización en segundo plano, ya que por defecto está activa.
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getContext());
+        if (prefs.getBoolean(getContext().getString(R.string.pref_first_boot_key), true)) {
+            AlarmManager alarmMgr = (AlarmManager) getContext().getSystemService(Context.ALARM_SERVICE);
+            PendingIntent alarmIntent = PendingIntent.getBroadcast(
+                    getContext(),
+                    0,
+                    new Intent(getContext(), DownloadRssService.AlarmReceiver.class),
+                    0);
+            Utility.setAlarm(getContext(), alarmMgr, alarmIntent);
+            // Por último cambiamos la SharedPreference para que no se active cada vez
+            // que iniciamos. A partir de este punto sólo se modificará desde los ajustes.
+            prefs.edit().putBoolean(getContext().getString(R.string.pref_first_boot_key), false).apply();
+        }
 
         return rootView;
     }
@@ -292,32 +302,14 @@ public class MainFragment extends Fragment implements LoaderManager.LoaderCallba
             mSwipeRefreshLayout.setRefreshing(false);
             mSwipeRefreshLayoutEmpty.setRefreshing(false);
         }
-        
     }
 
     /**
      * Empieza el servicio de actualización en segundo plano.
      */
     private void startService() {
-        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getContext());
-        if(prefs.getBoolean(getContext().getString(R.string.pref_enable_notifications_key),
-                        Boolean.parseBoolean(getContext().getString(R.string.pref_enable_notifications_default)))) {
-                // Si las notificaciones están activadas lanzamos el servicio configurarndo la
-                // alarma para la próxima sincronización.
-                AlarmManager alarmMgr = (AlarmManager) getContext().getSystemService(Context.ALARM_SERVICE);
-                PendingIntent alarmIntent = PendingIntent.getBroadcast(
-                        getContext(),
-                        0,
-                        new Intent(getContext(), DownloadRssService.AlarmReceiver.class),
-                        0);
-                Utility.setAlarm(getContext(), alarmMgr, alarmIntent);
-        } else {
-                // Si no están activadas ejecutamos simplemente el servicio, sin activar 
-                // la sincronización.
-                Intent sendIntent = new Intent(getContext(), DownloadRssService.class);
-                getContext().startService(sendIntent);
-        }
-        
+        Intent sendIntent = new Intent(getContext(), DownloadRssService.class);
+        getContext().startService(sendIntent);
     }
 
     /**
