@@ -1,5 +1,7 @@
 package com.fjoglar.etsitnoticias;
 
+import android.app.AlarmManager;
+import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -290,7 +292,13 @@ public class MainFragment extends Fragment implements LoaderManager.LoaderCallba
             mSwipeRefreshLayout.setRefreshing(false);
             mSwipeRefreshLayoutEmpty.setRefreshing(false);
         }
-
+        AlarmManager alarmMgr = (AlarmManager) this.getSystemService(Context.ALARM_SERVICE);
+        PendingIntent alarmIntent = PendingIntent.getBroadcast(
+                this,
+                0,
+                new Intent(this, DownloadRssService.AlarmReceiver.class),
+                0);
+        Utility.setAlarm(this, alarmMgr, alarmIntent);
     }
 
     /**
