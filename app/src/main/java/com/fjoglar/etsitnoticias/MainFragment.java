@@ -301,7 +301,7 @@ public class MainFragment extends Fragment implements LoaderManager.LoaderCallba
     private void startService() {
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getContext());
         if(prefs.getBoolean(getContext().getString(R.string.pref_enable_notifications_key),
-                        Boolean.parseBoolean(getContext().getString(R.string.pref_enable_notifications_default)));) {
+                        Boolean.parseBoolean(getContext().getString(R.string.pref_enable_notifications_default)))) {
                 // Si las notificaciones están activadas lanzamos el servicio configurarndo la
                 // alarma para la próxima sincronización.
                 AlarmManager alarmMgr = (AlarmManager) getContext().getSystemService(Context.ALARM_SERVICE);
