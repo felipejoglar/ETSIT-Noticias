@@ -10,5 +10,5 @@
         android:orderInCategory="1"
         android:title="@string/action_filter"
         app:showAsAction="always" />
-    
+
 </menu>

@@ -31,8 +31,7 @@ public class DownloadRssService extends IntentService {
     private final String LOG_TAG = DownloadRssService.class.getSimpleName();
 
     // La URL desde la que se obtienen las noticias.
-//    private final String DOWNLOAD_URL = "http://www.tel.uva.es/rss/tablon.xml";
-    private final String DOWNLOAD_URL = "https://242269422d9d61e6af97c8c4814ad5985de2bed1.googledrive.com/host/0B8hd0RDbTmiRbmR4QWo2TkJDcEk/tablon.xml";
+    private final String DOWNLOAD_URL = "http://www.tel.uva.es/rss/tablon.xml";
     private static final int RSS_NOTIFICATION_ID = 8008;
 
     // Constantes para notificar a MainFragment que el servicio ha finalizado.
