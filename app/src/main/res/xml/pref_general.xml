@@ -15,7 +15,7 @@
         android:key="@string/pref_sync_frequency_key"
         android:title="@string/pref_sync_frequency_label" />
 
-    <PreferenceCategory android:title="Webs de interés">
+    <PreferenceCategory android:title="@string/pref_category_1_label">
 
         <Preference android:layout="@layout/preference_etsit_link">
             <intent
@@ -28,6 +28,12 @@
                 android:action="android.intent.action.VIEW"
                 android:data="http://www.aitcyl.es" />
         </Preference>
+
+    </PreferenceCategory>
+
+    <PreferenceCategory android:title="@string/pref_category_2_label">
+
+        <Preference android:layout="@layout/preference_about_app" />
 
     </PreferenceCategory>
 

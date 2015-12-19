@@ -49,6 +49,10 @@
 
     <string name="pref_first_boot_key" translatable="false">first_boot</string>
 
+    <string name="pref_category_1_label">Webs de interés</string>
+    <string name="pref_category_2_label">Sobre la App</string>
+    <string name="pref_developed_by">Desarrollada por Felipe Joglar Santos</string>
+
     <!-- Determina que noticia hay que abrir en primera instancia para la versión de tablets -->
     <string name="pref_modify_item_id_key">modify_item_to_show</string>
     <string name="pref_item_id_key">item_to_show</string>
