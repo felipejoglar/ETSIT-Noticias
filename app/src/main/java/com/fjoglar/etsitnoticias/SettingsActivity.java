@@ -42,6 +42,7 @@ public class SettingsActivity extends AppCompatPreferenceActivity
     @Override
     public void onResume() {
         SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(this);
+        sp.edit().putBoolean(getString(R.string.pref_is_in_foreground_key), true).apply();
         sp.registerOnSharedPreferenceChangeListener(this);
         super.onResume();
     }
@@ -49,6 +50,7 @@ public class SettingsActivity extends AppCompatPreferenceActivity
     @Override
     public void onPause() {
         SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(this);
+        sp.edit().putBoolean(getString(R.string.pref_is_in_foreground_key), false).apply();
         sp.unregisterOnSharedPreferenceChangeListener(this);
         super.onPause();
     }
@@ -115,4 +117,5 @@ public class SettingsActivity extends AppCompatPreferenceActivity
         }
         return super.onMenuItemSelected(featureId, item);
     }
+
 }

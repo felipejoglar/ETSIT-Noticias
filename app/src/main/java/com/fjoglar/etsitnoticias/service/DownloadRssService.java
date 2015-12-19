@@ -31,7 +31,8 @@ public class DownloadRssService extends IntentService {
     private final String LOG_TAG = DownloadRssService.class.getSimpleName();
 
     // La URL desde la que se obtienen las noticias.
-    private final String DOWNLOAD_URL = "http://www.tel.uva.es/rss/tablon.xml";
+//    private final String DOWNLOAD_URL = "http://www.tel.uva.es/rss/tablon.xml";
+    private final String DOWNLOAD_URL = "https://242269422d9d61e6af97c8c4814ad5985de2bed1.googledrive.com/host/0B8hd0RDbTmiRbmR4QWo2TkJDcEk/tablon.xml";
     private static final int RSS_NOTIFICATION_ID = 8008;
 
     // Constantes para notificar a MainFragment que el servicio ha finalizado.
@@ -66,8 +67,13 @@ public class DownloadRssService extends IntentService {
                 this.getString(R.string.pref_enable_notifications_key),
                 Boolean.parseBoolean(this.getString(R.string.pref_enable_notifications_default)));
 
+        // Para enviar la notificación hay que cumplir 3 condiciones:
+        // 1- Que las notificaciones estén habilitadas en los ajustes.
+        // 2- Que haya una noticia nueva.
+        // 3- Que la aplicación no esté activa.
         if (prefs.getBoolean(this.getString(R.string.pref_send_notification_key), false)
-                && displayNotifications) {
+                && displayNotifications
+                && !prefs.getBoolean(this.getString(R.string.pref_is_in_foreground_key), false)) {
             sendNotification();
         }
 

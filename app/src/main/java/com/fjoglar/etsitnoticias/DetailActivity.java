@@ -1,6 +1,8 @@
 package com.fjoglar.etsitnoticias;
 
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatActivity;
 
 public class DetailActivity extends AppCompatActivity {
@@ -24,4 +26,19 @@ public class DetailActivity extends AppCompatActivity {
         }
 
     }
+
+    @Override
+    public void onResume() {
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
+        prefs.edit().putBoolean(getString(R.string.pref_is_in_foreground_key), true).apply();
+        super.onResume();
+    }
+
+    @Override
+    public void onPause() {
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
+        prefs.edit().putBoolean(getString(R.string.pref_is_in_foreground_key), false).apply();
+        super.onPause();
+    }
+
 }

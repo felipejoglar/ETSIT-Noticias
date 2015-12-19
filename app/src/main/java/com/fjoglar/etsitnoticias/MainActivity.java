@@ -118,6 +118,20 @@ public class MainActivity extends AppCompatActivity implements MainFragment.Call
     }
 
     @Override
+    public void onResume() {
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
+        prefs.edit().putBoolean(getString(R.string.pref_is_in_foreground_key), true).apply();
+        super.onResume();
+    }
+
+    @Override
+    public void onPause() {
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
+        prefs.edit().putBoolean(getString(R.string.pref_is_in_foreground_key), false).apply();
+        super.onPause();
+    }
+
+    @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.mainactivity, menu);
         return true;
