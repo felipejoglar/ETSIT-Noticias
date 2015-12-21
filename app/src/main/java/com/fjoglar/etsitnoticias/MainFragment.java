@@ -47,8 +47,8 @@ public class MainFragment extends Fragment implements LoaderManager.LoaderCallba
     private SwipeRefreshLayout mSwipeRefreshLayoutEmpty;
 
     /**
-     * Una interfaz de Callback que todas las actividades que contienen este fragment deben
-     * implementar. Este mecanismo permite a las actividades ser notificadas de las selecciones
+     * Una interfaz de Callback que todas las Activity que contienen este fragment deben
+     * implementar. Este mecanismo permite a las Activity ser notificadas de las selecciones
      * de items.
      */
     public interface Callback {
@@ -87,7 +87,7 @@ public class MainFragment extends Fragment implements LoaderManager.LoaderCallba
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
 
-        // Recibimos el resultado del servicio y si la sincronización se hizo
+        // Se recibe el resultado del servicio y si la sincronización se hizo
         // de manera manual o al iniciar la aplicación detenemos la animación
         // del SwipeToRefresh.
         mBroadcastReceiver = new BroadcastReceiver() {
@@ -110,7 +110,7 @@ public class MainFragment extends Fragment implements LoaderManager.LoaderCallba
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        // Lanzamos la actitivdad de Ajustes.
+        // Lanzamos la Activity de Ajustes.
         int id = item.getItemId();
         if (id == R.id.action_settings) {
             startActivity(new Intent(getContext(), SettingsActivity.class));
@@ -128,6 +128,8 @@ public class MainFragment extends Fragment implements LoaderManager.LoaderCallba
         View rootView = inflater.inflate(R.layout.fragment_main, container, false);
 
         // Declaramos SwipeToRefresh.
+        // Hay dos SwipeToRefresh en el Layout, uno el de la lista en si, y el otro
+        // el de la EmptyView.
         mSwipeRefreshLayout = (SwipeRefreshLayout) rootView.findViewById(R.id.swipe_to_refresh);
         mSwipeRefreshLayoutEmpty = (SwipeRefreshLayout) rootView.findViewById(R.id.swipe_to_refresh_emptyView);
         mSwipeRefreshLayout.setColorSchemeResources(R.color.colorAccent);
@@ -135,8 +137,9 @@ public class MainFragment extends Fragment implements LoaderManager.LoaderCallba
 
         // Obtenemos una referencia al ListView y vinculamos el adaptador.
         mListView = (ListView) rootView.findViewById(R.id.listview_rss);
-        mListView.setEmptyView(mSwipeRefreshLayoutEmpty);
         mListView.setAdapter(mRssItemAdapter);
+        // Configuramos la EmptyView del ListView.
+        mListView.setEmptyView(mSwipeRefreshLayoutEmpty);
 
         mListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
 
@@ -160,6 +163,7 @@ public class MainFragment extends Fragment implements LoaderManager.LoaderCallba
 
         mSwipeRefreshLayout.setOnRefreshListener(this);
         mSwipeRefreshLayoutEmpty.setOnRefreshListener(this);
+
         // Al iniciar la aplicación actualizamos los datos.
         mSwipeRefreshLayout.post(new Runnable() {
             @Override
@@ -195,6 +199,8 @@ public class MainFragment extends Fragment implements LoaderManager.LoaderCallba
     @Override
     public void onStart() {
         super.onStart();
+        // Se registra el Receiver para que capture el mensaje que envía el servicio de
+        // sincronización cuando finaliza.
         LocalBroadcastManager.getInstance(getContext()).registerReceiver((mBroadcastReceiver),
                 new IntentFilter(DownloadRssService.SERVICE_RESULT)
         );
@@ -202,12 +208,14 @@ public class MainFragment extends Fragment implements LoaderManager.LoaderCallba
 
     @Override
     public void onStop() {
+        // Se desregistra el Receiver.
         LocalBroadcastManager.getInstance(getContext()).unregisterReceiver(mBroadcastReceiver);
         super.onStop();
     }
 
     @Override
     public void onResume() {
+        // Se registra un Listener para que actúe cuando hay cambios en las SharedPrefereces.
         SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(getActivity());
         sp.registerOnSharedPreferenceChangeListener(this);
         super.onResume();
@@ -215,6 +223,7 @@ public class MainFragment extends Fragment implements LoaderManager.LoaderCallba
 
     @Override
     public void onPause() {
+        // Se desregistra el Listener.
         SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(getActivity());
         sp.unregisterOnSharedPreferenceChangeListener(this);
         super.onPause();
@@ -252,6 +261,8 @@ public class MainFragment extends Fragment implements LoaderManager.LoaderCallba
 
     @Override
     public void onLoadFinished(Loader<Cursor> cursorLoader, Cursor cursor) {
+        // Si estamos en modo dos paneles seleccionamos la noticia en la lista, la misma que se
+        // muestra en vista detalle.
         mRssItemAdapter.swapCursor(cursor);
         if (mPosition != ListView.INVALID_POSITION) {
             mListView.smoothScrollToPosition(mPosition);
@@ -268,6 +279,10 @@ public class MainFragment extends Fragment implements LoaderManager.LoaderCallba
 
     @Override
     public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
+        // Este método hace que la experiencia de usuario sea más consistente en el modo
+        // de dos paneles. Si se cambia la noticia que se debe mostrar en la vista detalle
+        // (evento que ocurre en RssItemAdapter.java) se actualiza entonces la vista detalle
+        // con la primera noticia de la lista.
         if (key.equals(getString(R.string.pref_item_id_key)) && MainActivity.mTwoPane) {
             ((Callback) getContext())
                     .onItemSelected(RssContract.RssEntry.buildRssWithId(
@@ -279,15 +294,18 @@ public class MainFragment extends Fragment implements LoaderManager.LoaderCallba
     /**
      * Lanza un servicio para que actualice los datos en segundo plano y configura
      * la alarma de sincronización.
+     *
+     * @param forceUpdate Determina si la actualización la fuerza el usuario.
      */
     private void updateData(Boolean forceUpdate) {
 
+        // Se activa la animación del SwipeToRefresh.
         mSwipeRefreshLayout.setRefreshing(true);
         mSwipeRefreshLayoutEmpty.setRefreshing(true);
 
         // Si la última actualización ha sido hace menos de 10 minutos no actualizamos directamente
         // así evitamos conexiones innecesarias cuando se rota la pantalla y conseguimos
-        // un ahorro de batería, importente en dispositivos móviles.
+        // un ahorro de batería, importante en dispositivos móviles.
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getContext());
         if (System.currentTimeMillis() - prefs.getLong(getContext().getString(R.string.pref_last_updated_key), 0) > 10 * 60 * 1000) {
             if (Utility.isNetworkAvailable(getContext())) {
@@ -305,7 +323,7 @@ public class MainFragment extends Fragment implements LoaderManager.LoaderCallba
     }
 
     /**
-     * Empieza el servicio de actualización en segundo plano.
+     * Ejecuta el IntentService de actualización en segundo plano.
      */
     private void startService() {
         Intent sendIntent = new Intent(getContext(), DownloadRssService.class);
@@ -313,7 +331,7 @@ public class MainFragment extends Fragment implements LoaderManager.LoaderCallba
     }
 
     /**
-     * Recarga la lista de noticias cuando se modifica el filtro. De esta manera tenemos
+     * Recarga la lista de noticias cuando se modifica el filtro. De esta manera se tiene
      * la nueva lista disponible de manera inmediata.
      */
     public void reloadFragment() {
@@ -323,9 +341,9 @@ public class MainFragment extends Fragment implements LoaderManager.LoaderCallba
                 true).apply();
     }
 
-    /*
-        Actualiza la lista vacía con informacion relevante para que el usuario pueda
-        determinar porque no está viendo información.
+    /**
+     * Actualiza la lista vacía con informacion relevante para que el usuario pueda
+     * determinar porque no está viendo información.
      */
     private void updateEmptyView() {
         if (mRssItemAdapter.getCount() == 0) {

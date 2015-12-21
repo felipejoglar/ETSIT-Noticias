@@ -17,23 +17,27 @@ import java.io.InputStream;
 import java.util.Vector;
 
 /**
- * Esta clase recoge un archivo de noticias XML de etsit.es.
- * Dado un InputStream como representación de las noticias, devuelve una List
- * de entradas, donde cada elemento de la List representa una sola noticia.
+ * Esta clase recoge un archivo de noticias XML de tel.uva.es.
+ * Dado un InputStream como representación de las noticias, selecciona
+ * y guarda las noticias en una base de datos SQLite que será accedida
+ * posteriorente mediante un ContentProvider para mostrar las noticias.
  */
 public class RssXmlParser {
 
     // Etiqueta para los logs de depuración.
     private final String LOG_TAG = RssXmlParser.class.getSimpleName();
 
+    // Etiquetas XML a recoger.
     private final String TITLE_TAG = "title";
     private final String DESCRIPTION_TAG = "description";
     private final String LINK_TAG = "link";
     private final String CATEGORY_TAG = "category";
     private final String PUB_DATE_TAG = "pubDate";
+
     private String mTitle, mDescription, mLink, mCategory, mPubDate;
     private boolean mIsParsingTitle, mIsParsingDescription, mIsParsingLink, mIsParsingCategory, mIsParsingPubDate;
     private long mLastDownloadedNew = 0;
+
     private Vector<ContentValues> cVVector = new Vector<ContentValues>();
 
     public void parse(Context context, InputStream inputStream) throws XmlPullParserException, IOException {
@@ -44,7 +48,7 @@ public class RssXmlParser {
             XmlPullParserFactory factory = XmlPullParserFactory.newInstance();
             XmlPullParser xpp = factory.newPullParser();
 
-            // Establecemos la entrada del Parser."ISO-8859-1"
+            // Establecemos la entrada del Parser.
             xpp.setInput(inputStream, null);
 
             // Cogemos el primer evento del Parser y empezamos a iterar sobre el documento XML.
@@ -62,14 +66,12 @@ public class RssXmlParser {
                 eventType = xpp.next();
             }
 
-            // Si ha salido correctamente, tenemos el vector de ContentValues con los nuevos datos,
-            // así que borramos la tabla y la actualizamos de nuevo.
+            // Si ha salido correctamente, se tiene un vector de ContentValues con los nuevos
+            // datos, así que borramos la tabla y la actualizamos de nuevo.
             if (cVVector.size() > 0) {
-                // Antes de insertar los nuevos datos borramos los anteriores, de
-                // manera que siempre tengamos la última información, tal y como
-                // está en el tablón de www.etsit.es.
-                // También nos ayuda a que en modo tablet, nos muestre la última
-                // noticia cuando abrimos la aplicación.
+                // Antes de insertar los nuevos datos se borran los anteriores, de
+                // manera que siempre se tiene la última información, tal y como
+                // está en el tablón de www.tel.uva.es.
                 context.getContentResolver().delete(RssContract.RssEntry.CONTENT_URI, null, null);
 
                 ContentValues[] cvArray = new ContentValues[cVVector.size()];
@@ -77,6 +79,10 @@ public class RssXmlParser {
                 context.getContentResolver().bulkInsert(RssContract.RssEntry.CONTENT_URI, cvArray);
 
                 // Determinamos si hay que enviar notificación al usuario.
+                // Si la fecha de la última noticia es más reciente que la última
+                // actualización, se determina que hay que enviar notificación.
+                // Después en DownloadRssService se comprueba si definitivamente hay
+                // que notificar al usuario.
                 SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
                 if (mLastDownloadedNew > prefs.getLong(context.getString(R.string.pref_last_updated_key), 0))
                     prefs.edit().putBoolean(context.getString(R.string.pref_send_notification_key), true).apply();
@@ -142,7 +148,7 @@ public class RssXmlParser {
     }
 
     /**
-     * Guarda la noticia en la base de datos.
+     * Guarda la noticia en el ContentValues[] que luego se insertará en la base de datos.
      */
     private void insertRss() {
         long dateTime = Utility.ParseDate(mPubDate).getTime();

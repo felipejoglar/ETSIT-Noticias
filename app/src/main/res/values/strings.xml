@@ -1,7 +1,12 @@
 <resources>
+
+    <!-- Nombre de la App -->
     <string name="app_name">ETSIT-AITCyL Noticias</string>
+
+    <!-- Título de la actividad de ajustes -->
     <string name="title_activity_settings">Ajustes</string>
 
+    <!-- Botón en la vista de detalle -->
     <string name="more_info">Más información</string>
 
     <!-- Relacionado con los menús -->
@@ -71,13 +76,13 @@
     <string name="filter_1">Avisos destacados</string>
     <string name="filter_2">Avisos generales</string>
     <string name="filter_3">Conferencias/Charlas/Talleres</string>
-    <string name="filter_4">Ofertas de becas/Prácticas/Empleo</string>
+    <string name="filter_4">Ofertas de Becas/Prácticas/Empleo</string>
     <string name="filter_5">Avisos y Ofertas de TFG/TFM</string>
     <string name="filter_6">Junta de Escuela</string>
     <string name="filter_7">Investigación</string>
     <string name="filter_8">Otros</string>
 
-    <!-- Empty Weather Database -->
+    <!-- Texto de los estados vacíos de la lista -->
     <string name="empty_list">No hay información diponible.</string>
     <string name="empty_list_no_network">No hay información diponible. La conexión no está disponible para obtener los datos.</string>
 

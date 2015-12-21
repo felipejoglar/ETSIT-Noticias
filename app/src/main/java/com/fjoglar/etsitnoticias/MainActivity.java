@@ -44,25 +44,27 @@ public class MainActivity extends AppCompatActivity implements MainFragment.Call
     private CheckBox mCheckBoxFilter7;
     private CheckBox mCheckBoxFilter8;
 
-    // OnClickListener para el filtro.
+    // Se crea un OnClickListener personalizado para el filtro.
     private final View.OnClickListener mDrawerItemCheckBoxClickListener =
             new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
 
                     if (view instanceof LinearLayout) {
+                        // Si se pulsa en el texto se actualiza también el CheckBox.
                         CheckBox checkBox = findCheckBoxByTag(view.getTag().toString());
                         assert checkBox != null;
                         if (checkBox.isChecked()) {
                             checkBox.setChecked(false);
-
                         } else {
                             checkBox.setChecked(true);
                         }
+                        // Se actualiza el filtro y el listado de noticias.
                         updateFilter();
                         mFragment.reloadFragment();
 
                     } else if (view instanceof CheckBox) {
+                        // Se actualiza el filtro y el listado de noticias.
                         updateFilter();
                         mFragment.reloadFragment();
                     }
@@ -79,13 +81,17 @@ public class MainActivity extends AppCompatActivity implements MainFragment.Call
         mPrefs = PreferenceManager.getDefaultSharedPreferences(this);
         mFragment = (MainFragment) getSupportFragmentManager().findFragmentById(R.id.fragment_main);
 
-        // Habilitamos el BroadastReceiver, una vez habilitado permanece habilitado
-        // aunque reiniciemos.
-        ComponentName receiver = new ComponentName(this, DeviceBootReceiver.class);
-        PackageManager pm = this.getPackageManager();
-        pm.setComponentEnabledSetting(receiver,
-                PackageManager.COMPONENT_ENABLED_STATE_ENABLED,
-                PackageManager.DONT_KILL_APP);
+        // Si es la primera ejecución de la App habilitamos el BroadastReceiver, una
+        // vez habilitado permanece habilitado aunque reiniciemos.
+        // Se hace sólo una vez ya que luego se activa o desactiva junto con las
+        // notificaciones en SettingsActivity.
+        if (mPrefs.getBoolean(this.getString(R.string.pref_first_boot_key), true)){
+            ComponentName receiver = new ComponentName(this, DeviceBootReceiver.class);
+            PackageManager pm = this.getPackageManager();
+            pm.setComponentEnabledSetting(receiver,
+                    PackageManager.COMPONENT_ENABLED_STATE_ENABLED,
+                    PackageManager.DONT_KILL_APP);
+        }
 
         // Declaramos la barra de navegación lateral.
         mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -119,6 +125,8 @@ public class MainActivity extends AppCompatActivity implements MainFragment.Call
 
     @Override
     public void onResume() {
+        // En la llamada a onResume la App está en primer plano así que se
+        // pone el flag a true para que las notificaciones no se envíen.
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
         prefs.edit().putBoolean(getString(R.string.pref_is_in_foreground_key), true).apply();
         super.onResume();
@@ -126,6 +134,8 @@ public class MainActivity extends AppCompatActivity implements MainFragment.Call
 
     @Override
     public void onPause() {
+        // En la llamada a onPause la App deja de estar en primer plano así que se
+        // pone el flag a false para que las notificaciones se envíen.
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
         prefs.edit().putBoolean(getString(R.string.pref_is_in_foreground_key), false).apply();
         super.onPause();
@@ -166,8 +176,10 @@ public class MainActivity extends AppCompatActivity implements MainFragment.Call
 
     @Override
     public void onItemSelected(Uri contentUri) {
+        // Al seleccionar una noticia se mostrará en la zona de vista detalle si
+        // estamos en modo de dos paneles. Si no se lanzará una nueva Activity con
+        // la vista detalle.
         if (mTwoPane) {
-
             Bundle args = new Bundle();
             args.putParcelable(DetailFragment.DETAIL_URI, contentUri);
 
@@ -258,10 +270,10 @@ public class MainActivity extends AppCompatActivity implements MainFragment.Call
     }
 
     /**
-     * Guarda los filtros seleccionados para mantenerlos aunque cerremos la aplicación.
+     * Guarda los filtros seleccionados para mantenerlos aunque se cierre la aplicación.
      */
     private void updateFilter() {
-        // Comprobamos las categorías que queremos mostrar.
+        // Se comprueban las categorías que se quieren mostrar.
         if (mCheckBoxFilter1.isChecked()) {
             mPrefs.edit().putBoolean(getString(R.string.pref_filter_1_key), true).apply();
         } else {

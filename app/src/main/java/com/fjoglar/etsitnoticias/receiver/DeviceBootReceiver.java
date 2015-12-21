@@ -13,6 +13,10 @@ import com.fjoglar.etsitnoticias.service.DownloadRssService;
  * Este BroadcastReceiver establece la alarma de sincronización
  * cuando el dispositivo se ha reiniciado. Esto es importante ya
  * que las alarmas se cancelan cuando se apaga el dispositivo.
+ *
+ * Más información:
+ * http://developer.android.com/intl/es/training/scheduling/alarms.html#boot
+ * http://developer.android.com/intl/es/reference/android/content/BroadcastReceiver.html
  */
 public class DeviceBootReceiver extends BroadcastReceiver {
 

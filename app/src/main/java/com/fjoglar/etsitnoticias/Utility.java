@@ -20,6 +20,12 @@ public class Utility {
     // Etiqueta para los logs de depuración.
     private final static String LOG_TAG = Utility.class.getSimpleName();
 
+    /**
+     * Cambia el número de la categoría por el nombre.
+     *
+     * @param category Categoria como String numérico.
+     * @return El nombre de la categoría.
+     */
     public static String categoryToString(String category) {
         String result;
 
@@ -44,6 +50,12 @@ public class Utility {
         return result;
     }
 
+    /**
+     * Cambia la primera letra del String a mayúscula.
+     *
+     * @param word palabra a modificar
+     * @return palabra modificada.
+     */
     public static String capitalizeWord(String word) {
         return Character.toUpperCase(word.charAt(0)) + word.substring(1);
     }
@@ -134,8 +146,9 @@ public class Utility {
         Calendar c = Calendar.getInstance();
         String formattedDate = format.format(c.getTime());
 
-        Date d1 = null;
-        Date d2 = null;
+        Date d1;
+        Date d2;
+
         try {
 
             d1 = format.parse(formattedDate);

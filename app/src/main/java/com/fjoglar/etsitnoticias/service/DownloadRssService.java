@@ -25,6 +25,14 @@ import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 
+/**
+ * Servicio que ejecuta la tarea de sincronización en segundo plano.
+ * De esta manera evitamos los problemas de una sincronización con elementos vinculados
+ * a la Interfaz de Usuario como AsyncTask o Threads implementados desde la Activity.
+ *
+ * Más información:
+ * http://developer.android.com/intl/es/training/run-background-service/create-service.html
+ */
 public class DownloadRssService extends IntentService {
 
     // Etiqueta para los logs de depuración.
@@ -48,11 +56,15 @@ public class DownloadRssService extends IntentService {
     @Override
     public void onCreate() {
         super.onCreate();
+        // Se usa este LocalBroadcastManager para notificar al Fragment principal
+        // cuando el servicio ha finalizado.
         mLocalBroadcastManager = LocalBroadcastManager.getInstance(this);
     }
 
     @Override
     protected void onHandleIntent(Intent intent) {
+
+        // Lo primero es cargar los datos en formato XML desde la web de la ETSIT.
         try {
             loadXmlFromNetwork(DOWNLOAD_URL);
         } catch (IOException | XmlPullParserException e) {
@@ -61,43 +73,66 @@ public class DownloadRssService extends IntentService {
         }
 
         // Comprobamos si hay que enviar notificación al usuario.
-        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
-        boolean displayNotifications = prefs.getBoolean(
-                this.getString(R.string.pref_enable_notifications_key),
-                Boolean.parseBoolean(this.getString(R.string.pref_enable_notifications_default)));
-
         // Para enviar la notificación hay que cumplir 3 condiciones:
         // 1- Que las notificaciones estén habilitadas en los ajustes.
         // 2- Que haya una noticia nueva.
         // 3- Que la aplicación no esté activa.
-        if (prefs.getBoolean(this.getString(R.string.pref_send_notification_key), false)
-                && displayNotifications
-                && !prefs.getBoolean(this.getString(R.string.pref_is_in_foreground_key), false)) {
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
+
+        boolean sendNotification = prefs.getBoolean(
+                this.getString(R.string.pref_send_notification_key),
+                false);
+        boolean displayNotifications = prefs.getBoolean(
+                this.getString(R.string.pref_enable_notifications_key),
+                Boolean.parseBoolean(this.getString(R.string.pref_enable_notifications_default)));
+        boolean isInForeground = prefs.getBoolean(
+                this.getString(R.string.pref_is_in_foreground_key),
+                false);
+
+        if (sendNotification && displayNotifications && !isInForeground) {
             sendNotification();
         }
 
+        // La sincronización ha finalizado, se envía la notificación al Fragment principal.
         sendResult(this.getString(R.string.service_result));
     }
 
-    // Descarga el fichero XML de etsit.es y lo parsea.
+    /**
+     * Descarga el fichero XML de etsit.es y lo parsea.
+     *
+     * @param urlString URL del fichero XML a descargar.
+     * @throws XmlPullParserException
+     * @throws IOException
+     */
     private void loadXmlFromNetwork(String urlString) throws XmlPullParserException, IOException {
         InputStream stream = null;
         RssXmlParser rssXmlParser = new RssXmlParser();
 
         try {
+            // Primero se descarga el fichero.
             stream = downloadUrl(urlString);
+            // Posteriormente se parsea y se guardan las noticias en la base de datos.
             rssXmlParser.parse(this, stream);
+        } finally {
             // Nos aseguramos de que el InputStream se cierra después de terminar de
             // usarlo.
-        } finally {
             if (stream != null) {
                 stream.close();
             }
         }
     }
 
-    // Dado un URL, establece una HttpUrlConnection y obtiene
-    // el contenido como un InputStream.
+    /**
+     * Dado un URL, establece una HttpUrlConnection y obtiene el contenido
+     * como un InputStream.
+     * <p/>
+     * Más información:
+     * http://developer.android.com/intl/es/training/basics/network-ops/connecting.html
+     *
+     * @param urlString URL del fichero XML a descargar.
+     * @return InputStream con los datos descargados.
+     * @throws IOException
+     */
     private InputStream downloadUrl(String urlString) throws IOException {
 
         URL url = new URL(urlString);
@@ -156,7 +191,7 @@ public class DownloadRssService extends IntentService {
     }
 
     /**
-     * Envía un mensaje que será recibido por el fragment que lanzó el servicio.
+     * Envía un mensaje que será recibido por el Fragment que lanzó el servicio.
      *
      * @param message Mensaje a enviar.
      */

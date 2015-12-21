@@ -20,6 +20,9 @@ public class SplashScreenActivity extends Activity {
 
         // Una vez finalizado el tiempo abrimos la actividad principal.
         Intent intent = new Intent(getApplicationContext(), MainActivity.class);
+        // Estos Flags evitan que la App vuelva a mostrar esta pantalla cuando pulsamos
+        // el botón de atrás del sistema.
+        // Esta Activity sólo se muestra al iniciar la App.
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         startActivity(intent);

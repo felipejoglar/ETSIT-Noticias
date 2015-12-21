@@ -15,6 +15,7 @@ public class RssDbHelper extends SQLiteOpenHelper {
     // de datos.
     private static final int DATABASE_VERSION = 1;
 
+    // Nombre de la base de datos.
     static final String DATABASE_NAME = "rss.db";
 
     public RssDbHelper(Context context) {
@@ -23,8 +24,9 @@ public class RssDbHelper extends SQLiteOpenHelper {
 
     @Override
     public void onCreate(SQLiteDatabase sqLiteDatabase) {
-        // Crear una tabla para almacenar las noticias. Una noticia consiste de título, descripción,
-        // un link de información, una categoria y una fecha de publicación.
+        // Crear una tabla para almacenar las noticias.
+        // Una noticia consiste de título, descripción, un link de información,
+        // una categoria y una fecha de publicación.
         final String SQL_CREATE_RSS_TABLE = "CREATE TABLE " + RssEntry.TABLE_NAME + " (" +
                 RssEntry._ID + " INTEGER PRIMARY KEY," +
                 RssEntry.COLUMN_TITLE + " TEXT NOT NULL, " +

@@ -11,14 +11,21 @@ import android.preference.PreferenceManager;
 
 import com.fjoglar.etsitnoticias.R;
 
+/**
+ * Define el ContentProvider que se va a usar para almacenar y extraer
+ * los datos de la base de dato SQLite que hay por debajo.
+ *
+ * Más información:
+ * http://developer.android.com/intl/es/guide/topics/providers/content-provider-creating.html
+ */
 public class RssProvider extends ContentProvider {
 
     // El URI Matcher usado por este content provider.
     private static final UriMatcher sUriMatcher = buildUriMatcher();
     private RssDbHelper mRssDbHelper;
 
-    static final int RSS = 100;
-    static final int RSS_ITEM = 101;
+    private static final int RSS = 100;
+    private static final int RSS_ITEM = 101;
 
     static UriMatcher buildUriMatcher() {
         final UriMatcher matcher = new UriMatcher(UriMatcher.NO_MATCH);
@@ -39,7 +46,7 @@ public class RssProvider extends ContentProvider {
     @Override
     public String getType(Uri uri) {
 
-        // Use the Uri Matcher to determine what kind of URI this is.
+        // Se usa el Uri Matcher para determinar el tipo de URI.
         final int match = sUriMatcher.match(uri);
 
         switch (match) {
@@ -57,6 +64,8 @@ public class RssProvider extends ContentProvider {
                         String sortOrder) {
         Cursor retCursor;
         switch (sUriMatcher.match(uri)) {
+            // Consulta general con filtrado por categoría.
+            // Para la vista de lista de noticias.
             case RSS: {
                 // Comprobamos las categorías que debemos mostrar.
                 String where = "";
@@ -109,6 +118,8 @@ public class RssProvider extends ContentProvider {
                 );
                 break;
             }
+            // Consulta de una sola noticia filtrada por ID.
+            // Para la vista detalle.
             case RSS_ITEM: {
                 String where = "_id = " + uri.getPathSegments().get(1);
                 retCursor = mRssDbHelper.getReadableDatabase().query(
@@ -157,7 +168,8 @@ public class RssProvider extends ContentProvider {
         final SQLiteDatabase db = mRssDbHelper.getWritableDatabase();
         final int match = sUriMatcher.match(uri);
         int rowsDeleted;
-        // this makes delete all rows return the number of rows deleted
+        // Esto hace que se borren todas las filas y devuelve el número de las que se
+        // han borrado.
         if (null == selection) selection = "1";
         switch (match) {
             case RSS:
@@ -167,7 +179,6 @@ public class RssProvider extends ContentProvider {
             default:
                 throw new UnsupportedOperationException("Unknown uri: " + uri);
         }
-        // Because a null deletes all rows
         if (rowsDeleted != 0) {
             getContext().getContentResolver().notifyChange(uri, null);
         }
@@ -197,6 +208,9 @@ public class RssProvider extends ContentProvider {
 
     @Override
     public int bulkInsert(Uri uri, ContentValues[] values) {
+        // Con este método se inserta una lista de varias noticias mediante una Transaction
+        // de manera consistente y eficiente.
+        // De esta manera no necesitamos agregar las noticias una a una.
         final SQLiteDatabase db = mRssDbHelper.getWritableDatabase();
         final int match = sUriMatcher.match(uri);
         switch (match) {

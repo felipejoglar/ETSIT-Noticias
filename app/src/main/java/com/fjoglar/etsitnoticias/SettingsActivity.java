@@ -42,7 +42,10 @@ public class SettingsActivity extends AppCompatPreferenceActivity
     @Override
     public void onResume() {
         SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(this);
+        // En la llamada a onResume la App está en primer plano así que se
+        // pone el flag a true para que las notificaciones no se envíen.
         sp.edit().putBoolean(getString(R.string.pref_is_in_foreground_key), true).apply();
+        // Se registra un Listener para que actúe cuando hay cambios en las SharedPrefereces.
         sp.registerOnSharedPreferenceChangeListener(this);
         super.onResume();
     }
@@ -50,7 +53,10 @@ public class SettingsActivity extends AppCompatPreferenceActivity
     @Override
     public void onPause() {
         SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(this);
+        // En la llamada a onPause la App deja de estar en primer plano así que se
+        // pone el flag a false para que las notificaciones se envíen.
         sp.edit().putBoolean(getString(R.string.pref_is_in_foreground_key), false).apply();
+        // Se desregistra el Listener.
         sp.unregisterOnSharedPreferenceChangeListener(this);
         super.onPause();
     }
@@ -73,12 +79,19 @@ public class SettingsActivity extends AppCompatPreferenceActivity
 
     @Override
     public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
+
         AlarmManager alarmMgr = (AlarmManager) this.getSystemService(Context.ALARM_SERVICE);
         PendingIntent alarmIntent = PendingIntent.getBroadcast(
                 this,
                 0,
                 new Intent(this, DownloadRssService.AlarmReceiver.class),
                 0);
+
+        // Si se cambia el ajuste de notificaciones:
+        // Si se activa, se activa la alarma qe lanza las sincronizaciones y
+        // se activa de nuevo el BroadcastReceiver de reinicio de dispositivo.
+        // Si se desactiva, se cancela la alarma de sincronización y se desactiva
+        // el BroadastReceiver de reinicio de dispositivo.
         if (key.equals(getString(R.string.pref_enable_notifications_key))) {
             if (sharedPreferences.getBoolean(getString(R.string.pref_enable_notifications_key), true)) {
                 Utility.setAlarm(this, alarmMgr, alarmIntent);
@@ -102,6 +115,8 @@ public class SettingsActivity extends AppCompatPreferenceActivity
                         PackageManager.DONT_KILL_APP);
             }
         } else if (key.equals(getString(R.string.pref_sync_frequency_key))) {
+            // Si se cambia la frecuencia de actualización:
+            // Volvemos a activar la alarma con la nueva frecuencia.
             Utility.setAlarm(this, alarmMgr, alarmIntent);
         }
     }

@@ -22,7 +22,7 @@ public class RssItemAdapter extends CursorAdapter {
     private SharedPreferences mPrefs;
 
     /**
-     * Cache de las vistas de un objeto de la lista.
+     * Caché de las vistas de un objeto de la lista.
      */
     public static class ViewHolder {
         public final TextView titleView;
@@ -44,9 +44,10 @@ public class RssItemAdapter extends CursorAdapter {
      */
     public RssItemAdapter(Context context, Cursor c, int flags) {
         super(context, c, flags);
+        // Al crear el Adapter le decimos a la app que modificar la noticia a mostrar
+        // en la vista detalle en el modo de dos paneles.
         mPrefs = PreferenceManager.getDefaultSharedPreferences(context);
-        mPrefs.edit().putBoolean(context.getString(R.string.pref_modify_item_id_key),
-                true).apply();
+        mPrefs.edit().putBoolean(context.getString(R.string.pref_modify_item_id_key), true).apply();
     }
 
     @Override
@@ -64,6 +65,7 @@ public class RssItemAdapter extends CursorAdapter {
     public void bindView(View view, Context context, Cursor cursor) {
 
         ViewHolder viewHolder = (ViewHolder) view.getTag();
+
         // Modificamos la noticia a mostrar en la vista de detalle para el modo de
         // dos paneles, de esta manera se cargará automaticamente la primera noticia
         // de la lista.

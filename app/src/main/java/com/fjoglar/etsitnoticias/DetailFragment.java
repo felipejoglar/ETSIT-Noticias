@@ -34,7 +34,6 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
     private Uri mUri;
     private String mShareText;
 
-    // Para la vista de lista sólo necesitamos una parte de los datos almacenados.
     // Especificamos las columnas que necesitamos.
     private static final String[] RSS_COLUMNS = {
             RssContract.RssEntry._ID,
@@ -45,7 +44,7 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
             RssContract.RssEntry.COLUMN_PUB_DATE
     };
 
-    // Estos indices están ligados a RSS_COLUMNS.  Si RSS_COLUMNS cambia, estos
+    // Estos índices están ligados a RSS_COLUMNS.  Si RSS_COLUMNS cambia, estos
     // deben cambiar.
     public static final int COL_RSS_ID = 0;
     public static final int COL_RSS_TITLE = 1;
@@ -85,14 +84,14 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
 
         Bundle arguments = getArguments();
         if (arguments != null) {
-            // Si al fragment se le han pasado argumentos se carga la vista de la noticia
+            // Si al Fragment se le han pasado argumentos se carga la vista de la noticia
             // que le han pasado.
             mUri = arguments.getParcelable(DetailFragment.DETAIL_URI);
         } else {
             // Si no, se carga la vista de la noticia correspondiente al primer elemento de la
             // lista en función del filtro.
-            // De esta manera evitamos que cuando la aplicación se ejecute en una tablet,
-            // la zona de detalle de la noticia no aparezca vacía, ademas se actualiza ésta
+            // De esta manera se evita que cuando la aplicación se ejecute en una tablet
+            // la zona de detalle de la noticia aparezca vacía, ademas se actualiza ésta
             // dinámicamente cuando cambiamos los filtros.
             SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getContext());
             mUri = RssContract.RssEntry.buildRssWithId(prefs.getLong(getString(R.string.pref_item_id_key), 1));
@@ -133,6 +132,9 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
         TextView detailCategory = (TextView) getView().findViewById(R.id.detail_category);
         Button detailLink = (Button) getView().findViewById(R.id.detail_link);
 
+        // Si por algún casual no hay noticia que mostrar en la vista detalle, se ocultan
+        // las vistas. De esta manera se evita que se muestren el botón y el borde de la vista
+        // de categoría.
         if (!data.moveToFirst()) {
             detailTitle.setVisibility(View.GONE);
             detailDate.setVisibility(View.GONE);
@@ -186,7 +188,7 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
     }
 
     /**
-     * Abrimos la web.
+     * Se abre la noticia en la web de la ETSIT.
      *
      * @param link enlace a abrir.
      */
@@ -201,7 +203,8 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
     }
 
     /**
-     * Compartimos la noticia.
+     * Se comparte la noticia la noticia.
+     * Muestra un diálogo desde donde escoger la App con la que se desea compartir.
      *
      * @param text texto a compartir.
      */
