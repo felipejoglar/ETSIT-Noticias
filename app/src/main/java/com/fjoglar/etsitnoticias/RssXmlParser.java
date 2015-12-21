@@ -37,6 +37,7 @@ public class RssXmlParser {
     private String mTitle, mDescription, mLink, mCategory, mPubDate;
     private boolean mIsParsingTitle, mIsParsingDescription, mIsParsingLink, mIsParsingCategory, mIsParsingPubDate;
     private long mLastDownloadedNew = 0;
+    private String mLastNewTitle;
 
     private Vector<ContentValues> cVVector = new Vector<ContentValues>();
 
@@ -84,8 +85,10 @@ public class RssXmlParser {
                 // Después en DownloadRssService se comprueba si definitivamente hay
                 // que notificar al usuario.
                 SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
-                if (mLastDownloadedNew > prefs.getLong(context.getString(R.string.pref_last_updated_key), 0))
+                if (mLastDownloadedNew > prefs.getLong(context.getString(R.string.pref_last_updated_key), 0)) {
                     prefs.edit().putBoolean(context.getString(R.string.pref_send_notification_key), true).apply();
+                    prefs.edit().putString(context.getString(R.string.pref_last_new_title_key),mLastNewTitle).apply();
+                }
 
                 // Actualizamos la fecha de la última actualización.
                 prefs.edit().putLong(context.getString(R.string.pref_last_updated_key), System.currentTimeMillis()).apply();
@@ -159,8 +162,12 @@ public class RssXmlParser {
 
         // Guardamos la fecha de la última noticia.
         // Esto nos ayuda a la hora de mandar las notificaciones al usuario.
-        if (mLastDownloadedNew < dateTime)
+        // Guardamos el título de la última noticia para ponerla como descripción
+        // de la notificación en caso de que haya que notificar.
+        if (mLastDownloadedNew < dateTime) {
             mLastDownloadedNew = dateTime;
+            mLastNewTitle = Utility.formatText(mTitle);
+        }
 
         ContentValues rssValues = new ContentValues();
 

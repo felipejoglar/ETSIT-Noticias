@@ -1,7 +1,7 @@
 <resources>
 
     <!-- Nombre de la App -->
-    <string name="app_name">ETSIT-AITCyL Noticias</string>
+    <string name="app_name">ETSIT Noticias</string>
 
     <!-- Título de la actividad de ajustes -->
     <string name="title_activity_settings">Ajustes</string>
@@ -62,6 +62,8 @@
     <string name="pref_item_id_key">item_to_show</string>
 
     <!-- Relacionado con Notificaciones -->
+    <string name="pref_last_new_title_key" translatable="false">last_new_title</string>
+    <string name="pref_last_new_title_default" translatable="false">Nueva noticia</string>
     <string name="notification_text">Tienes nuevas noticias</string>
 
     <!-- Relacionado con el resultado de la sincronización -->

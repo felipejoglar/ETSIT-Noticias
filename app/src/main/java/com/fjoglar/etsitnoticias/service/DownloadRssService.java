@@ -88,9 +88,13 @@ public class DownloadRssService extends IntentService {
         boolean isInForeground = prefs.getBoolean(
                 this.getString(R.string.pref_is_in_foreground_key),
                 false);
+        // Se obtiene el título de la última noticia para mostarlo en la notificación.
+        String notificationText = prefs.getString(
+                this.getString(R.string.pref_last_new_title_key),
+                this.getString(R.string.pref_last_new_title_default));
 
         if (sendNotification && displayNotifications && !isInForeground) {
-            sendNotification();
+            sendNotification(notificationText);
         }
 
         // La sincronización ha finalizado, se envía la notificación al Fragment principal.
@@ -152,10 +156,9 @@ public class DownloadRssService extends IntentService {
     /**
      * Crea y envía una notificación.
      */
-    private void sendNotification() {
+    private void sendNotification(String notificationText) {
         int iconId = R.drawable.ic_notification;
-        String title = this.getString(R.string.app_name);
-        String contentText = this.getString(R.string.notification_text);
+        String title = this.getString(R.string.notification_text);
 
         // NotificationCompatBuilder es una buena manera de crear notificaciones
         // compatibles con versiones anteriores de Android.
@@ -163,7 +166,7 @@ public class DownloadRssService extends IntentService {
                 new NotificationCompat.Builder(this)
                         .setSmallIcon(iconId)
                         .setContentTitle(title)
-                        .setContentText(contentText)
+                        .setContentText(notificationText)
                         .setSound(RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION))
                         .setAutoCancel(true);
 
