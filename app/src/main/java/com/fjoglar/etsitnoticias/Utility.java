@@ -125,7 +125,7 @@ public class Utility {
         // Obtenemos el periodo de sincronización.
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
         int syncInterval = 1000 * 60 * 60 *
-                Integer.parseInt(prefs.getString(context.getString(R.string.pref_sync_frequency_key), "6"));
+                Integer.parseInt(prefs.getString(context.getString(R.string.pref_sync_frequency_key), "1"));
         alarmMgr.setInexactRepeating(AlarmManager.ELAPSED_REALTIME_WAKEUP,
                 syncInterval,
                 syncInterval,
