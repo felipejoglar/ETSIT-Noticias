@@ -29,7 +29,6 @@ import java.net.URL;
  * Servicio que ejecuta la tarea de sincronización en segundo plano.
  * De esta manera evitamos los problemas de una sincronización con elementos vinculados
  * a la Interfaz de Usuario como AsyncTask o Threads implementados desde la Activity.
- *
  * Más información:
  * http://developer.android.com/intl/es/training/run-background-service/create-service.html
  */
@@ -167,8 +166,11 @@ public class DownloadRssService extends IntentService {
                         .setSmallIcon(iconId)
                         .setContentTitle(title)
                         .setContentText(notificationText)
+                        .setColor(getResources().getColor(R.color.colorPrimary))
                         .setSound(RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION))
-                        .setAutoCancel(true);
+                        .setAutoCancel(true)
+                        .setStyle(new NotificationCompat.BigTextStyle()
+                                .bigText(notificationText));
 
         // Cuando el usuario pulsa la notificación se abre la aplicación.
         Intent resultIntent = new Intent(this, SplashScreenActivity.class);
