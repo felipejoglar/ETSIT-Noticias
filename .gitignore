@@ -1,5 +1,6 @@
 
 # built application files
+/*/build/
 *.apk
 *.ap_
 
@@ -14,6 +15,8 @@ bin/
 gen/
 out/
 build/
+lint.xml
+lint
 
 # Local configuration file (sdk path, etc)
 local.properties
@@ -21,27 +24,53 @@ local.properties
 # Eclipse project files
 .classpath
 .project
+.settings
+.checkstyle
 
 # Windows thumbnail db
 .DS_Store
 
-# IDEA/Android Studio project files, because
-# the project can be imported from settings.gradle
-.idea
-*.iml
-
-# Old-style IDEA project files
-*.ipr
-*.iws
-
-# Local IDEA workspace
-.idea/workspace.xml
-
-# Gradle cache
+# Android Studio
+.idea/
 .gradle
+/*/local.properties
+/*/out
+/*/*/build
+/*/*/production
+*.iml
+*.iws
+*.ipr
+*~
+*.swp
+classes
+gen-external-apklibs
+
+#vi
+*.swp
+
+#other editors
+*.bak
+
+#Maven
+target
+release.properties
+pom.xml.*
+
+#Ant
+build.xml
+ant.properties
+local.properties
+proguard.cfg
+proguard-project.txt
+
+#Other
+.DS_Store
+Thumbs.db
+tmp
+*.tgz
+*.lock
+*.lck
+com_crashlytics_export_strings.xml
 
 # Sandbox stuff
 _sandbox
-
-/.idea/libraries
-/captures
