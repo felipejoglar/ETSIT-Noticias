@@ -10,7 +10,7 @@ También podrás recibir notificaciones cuando una noticia nueva haya sido publi
 
 ![](https://github.com/fjoglar/ETSIT-Noticias/blob/master/ETSIT-Noticias.png)
 
-:[![Consíguela en Google Play][2]][1]:
+[![Consíguela en Google Play][2]][1]
 
 ### Licencia
 
@@ -30,5 +30,5 @@ See the License for the specific language governing permissions and
 limitations under the License.
 ```
 
-  [1]: https://play.google.com/store/apps/details?id=com.fjoglar.etsitnoticias
-  [2]: https://github.com/fjoglar/ETSIT-Noticias/blob/master/google-play-badge.png (Consíguela en Google Play)
+[1]: https://play.google.com/store/apps/details?id=com.fjoglar.etsitnoticias
+[2]: https://github.com/fjoglar/ETSIT-Noticias/blob/master/google-play-badge.png (Consíguela en Google Play)
