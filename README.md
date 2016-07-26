@@ -1,4 +1,6 @@
-### ETSIT Noticias
+### [DEPRECATED] ETSIT Noticias
+
+> Este repositorio está obsoleto. Prueba la nueva versión [aquí][3].
 
 Aplicación ganadora del concurso a la mejor app de noticias de la ETSIT – AITCYL de la Universidad de Valladolid.
 
@@ -32,3 +34,4 @@ limitations under the License.
 
 [1]: https://play.google.com/store/apps/details?id=com.fjoglar.etsitnoticias
 [2]: https://github.com/fjoglar/ETSIT-Noticias/blob/master/google-play-badge.png (Consíguela en Google Play)
+[3]: https://github.com/fjoglar/ETSIT-News
